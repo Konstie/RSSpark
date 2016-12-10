@@ -1,19 +1,31 @@
-package com.app.rsspark.repository.models;
+package com.app.rsspark.domain.models;
 
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
 /**
  * Created by kmikhailovskiy on 08.12.2016.
  */
 
+@RealmClass
 public class NewsItem extends RealmObject {
+    @PrimaryKey private int id;
     private String title;
-    private String decription;
+    private String description;
     private Date date;
     private String articleUrl;
     private String imageUrl;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -23,12 +35,12 @@ public class NewsItem extends RealmObject {
         this.title = title;
     }
 
-    public String getDecription() {
-        return decription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDecription(String decription) {
-        this.decription = decription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getDate() {
@@ -59,7 +71,7 @@ public class NewsItem extends RealmObject {
     public String toString() {
         return "NewsItem{" +
                 "title='" + title + '\'' +
-                ", decription='" + decription + '\'' +
+                ", description='" + description + '\'' +
                 ", date=" + date +
                 ", articleUrl='" + articleUrl + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +

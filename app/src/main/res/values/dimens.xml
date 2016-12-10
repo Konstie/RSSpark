@@ -12,11 +12,18 @@
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
-    <!-- Place item card dimens -->
-    <dimen name="place_card_height">148dp</dimen>
-    <dimen name="place_card_content_padding">16dp</dimen>
-    <dimen name="place_card_actions_padding">8dp</dimen>
-    <dimen name="place_card_subtext_font_size">14sp</dimen>
-    <dimen name="place_card_header_font_size">24sp</dimen>
-    <dimen name="place_fav_icon_size">36dp</dimen>
+    <!-- News item card dimens -->
+    <dimen name="news_card_height">148dp</dimen>
+    <dimen name="news_card_content_padding">16dp</dimen>
+    <dimen name="news_card_actions_padding">8dp</dimen>
+    <dimen name="news_card_subtext_font_size">14sp</dimen>
+    <dimen name="news_card_header_font_size">24sp</dimen>
+
+    <!-- RSS sources list -->
+    <dimen name="feeds_menu_icon_size">24dp</dimen>
+    <dimen name="feeds_item_height">48dp</dimen>
+    <dimen name="feeds_content_areas_space">8dp</dimen>
+    <dimen name="feeds_title_text_size">14sp</dimen>
+    <dimen name="feeds_margin">16dp</dimen>
+    <dimen name="feeds_drawer_width">280dp</dimen>
 </resources>

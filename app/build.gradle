@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 
 android {
@@ -44,12 +45,14 @@ dependencies {
     compile 'io.realm:android-adapters:1.4.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile "io.reactivex:rxjava:$rxVersion"
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'org.jsoup:jsoup:1.10.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    apt "com.google.dagger:dagger-compiler:$daggerVersion"
     compile "com.google.dagger:dagger:$daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    provided 'javax.annotation:jsr250-api:1.0'
     testCompile 'junit:junit:4.12'
 }
