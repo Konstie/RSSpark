@@ -1,8 +1,11 @@
 package com.app.rsspark.ui.sections.home;
 
 import android.os.Bundle;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.app.rsspark.R;
 import com.app.rsspark.domain.models.RssItem;
@@ -145,5 +149,10 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     private void showNewFeedDialog() {
         RssSourceCreationDialog dialog = new RssSourceCreationDialog();
         dialog.show(getSupportFragmentManager(), RSS_DIALOG_TAG);
+    }
+
+    @Override
+    public void showInvalidNewRssMessage(@StringRes int messageRes) {
+        Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show();
     }
 }

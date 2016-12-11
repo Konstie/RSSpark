@@ -2,14 +2,12 @@ package com.app.rsspark.presenters.home;
 
 import android.util.Log;
 
-import com.app.RSSparkApplication;
+import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.domain.models.RssItem;
 import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.presenters.abs.Presenter;
 
 import javax.inject.Inject;
-
-import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by konstie on 10.12.16.

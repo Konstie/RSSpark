@@ -20,12 +20,14 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:text="@string/drawer_add_new_rss"
+                android:textColor="@color/color_primary_text"
                 android:textSize="@dimen/feeds_title_text_size" />
             <ImageView
                 android:layout_width="@dimen/feeds_menu_icon_size"
                 android:layout_height="@dimen/feeds_menu_icon_size"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/feeds_margin"
                 android:src="@drawable/ic_action_add" />
         </RelativeLayout>
         <android.support.v7.widget.RecyclerView

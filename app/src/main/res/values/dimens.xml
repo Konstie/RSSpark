@@ -26,4 +26,7 @@
     <dimen name="feeds_title_text_size">14sp</dimen>
     <dimen name="feeds_margin">16dp</dimen>
     <dimen name="feeds_drawer_width">280dp</dimen>
+
+    <!-- New RSS dialog -->
+    <dimen name="dialog_content_padding">24dp</dimen>
 </resources>

@@ -62,7 +62,7 @@ public class FeedItemsAdapter extends RealmRecyclerViewAdapter<RssItem, FeedItem
 
         FeedItemHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

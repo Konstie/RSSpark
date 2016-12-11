@@ -3,7 +3,9 @@ package com.app.rsspark.domain.repository;
 import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
 
 import io.realm.Realm;
+import io.realm.RealmModel;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -35,7 +37,11 @@ public abstract class BaseStorage<T extends RealmObject> {
         realm.executeTransaction(realm1 -> item.deleteFromRealm());
     }
 
-    public int getMaxItemId(Class<T> instanceClass) {
-        return realm.where(instanceClass).max("id").intValue() + 1;
+    public int getMaxItemId(Class<? extends RealmModel> instanceClass) {
+        RealmResults<? extends RealmModel> realmResults = Realm.getDefaultInstance().where(instanceClass).findAll();
+        if (realmResults.isEmpty()) {
+            return 1;
+        }
+        return realmResults.max(RSSParkDatabaseContract.FIELD_ID).intValue() + 1;
     }
 }

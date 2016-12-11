@@ -9,5 +9,8 @@
     <string name="feed_dialog_save">Save</string>
     <string name="feed_dialog_cancel">Cancel</string>
     <string name="feed_dialog_title">Title</string>
-    <string name="feed_dialog_url">RSS URL</string>
+    <string name="feed_dialog_url">URL</string>
+    <string name="feed_dialog_empty_title">Please, type the title of RSS-source to save it</string>
+    <string name="feed_dialog_invalid_url">Please, check the URL. It seems to be incorrect or empty</string>
+    <string name="feed_dialog_could_not_save_feed">Could not save RSS-source. Please, try again</string>
 </resources>
