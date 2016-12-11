@@ -32,6 +32,10 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         this.newsItems = newsItems;
     }
 
+    public void setNewsItems(RealmResults<NewsItem> newsItems) {
+        this.newsItems = newsItems;
+    }
+
     @Override
     public NewsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(context).inflate(R.layout.item_news, parent);

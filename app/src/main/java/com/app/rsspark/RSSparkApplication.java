@@ -18,7 +18,6 @@ import io.realm.Realm;
 
 public class RSSparkApplication extends Application {
     private static AppComponent appComponent = null;
-    private static DatabaseComponent databaseComponent = null;
 
     @Override
     public void onCreate() {
@@ -28,20 +27,10 @@ public class RSSparkApplication extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
-
-        databaseComponent = DaggerDatabaseComponent.builder().build();
     }
 
     public static Context getContext() {
         return appComponent.appContext();
-    }
-
-    public static DatabaseComponent getDatabaseComponent() {
-        return databaseComponent;
-    }
-
-    public static Realm getRealm() {
-        return databaseComponent.realm();
     }
 
     public static Resources getAppResources() {

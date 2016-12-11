@@ -1,5 +1,6 @@
 package com.app.rsspark.domain.repository;
 
+import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.domain.models.RssItem;
 
 import io.realm.RealmResults;
@@ -12,4 +13,6 @@ import rx.Observable;
 
 public interface FeedsRepository {
     Observable<RssItem> newRssSource(String title, String url);
+    Observable<RssItem> findRssSourceById(int id);
+    Observable<RealmResults<NewsItem>> findNewsForRssFeedWithId(int id);
 }

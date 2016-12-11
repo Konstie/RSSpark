@@ -7,4 +7,5 @@ package com.app.rsspark.domain.contract;
 public interface RSSParkDatabaseContract {
     String FIELD_SAVED_DATE = "savedDate";
     String FIELD_ID = "id";
+    String FIELD_DATE = "date";
 }

@@ -29,6 +29,9 @@ import com.app.rsspark.presenters.abs.PresenterFactory;
 import com.app.rsspark.presenters.abs.PresenterLoader;
 import com.app.rsspark.presenters.home.HomePresenter;
 import com.app.rsspark.presenters.home.IHomeView;
+import com.app.rsspark.ui.sections.feed.RSSPagerAdapter;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +45,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     private PresenterFactory<HomePresenter> presenterFactory = HomePresenter::new;
     private HomePresenter presenter;
     private FeedItemsAdapter adapter;
+    private RSSPagerAdapter pagerAdapter;
 
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
@@ -101,10 +105,21 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     }
 
     @Override
-    public void onRssSourcesInitialized(RealmResults<RssItem> rssItems) {
+    public void onRssSourcesInitialized(RealmResults<RssItem> rssItems, List<Integer> rssIds, List<String> rssTitles) {
         adapter = new FeedItemsAdapter(HomeActivity.this, rssItems, true);
         rssMenuListView.setAdapter(adapter);
-        // todo: initialize pager adapter
+        invalidateRssFeedsPager(rssIds, rssTitles);
+    }
+
+    private void invalidateRssFeedsPager(List<Integer> rssIds, List<String> rssTitles) {
+        tabLayout.setTabGravity(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setupWithViewPager(viewPager);
+        if (pagerAdapter == null) {
+            pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), rssIds, rssTitles);
+            viewPager.setAdapter(pagerAdapter);
+        } else {
+            pagerAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -117,7 +132,12 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+        if (pagerAdapter != null) {
+            viewPager.setAdapter(null);
+            viewPager.setAdapter(pagerAdapter);
+        }
         drawer.closeDrawer(GravityCompat.START);
+        // todo: 1. refresh tabLayout; 2. update viewpager
     }
 
     @Override

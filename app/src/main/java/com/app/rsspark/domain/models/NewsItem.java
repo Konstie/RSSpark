@@ -10,9 +10,9 @@ import io.realm.annotations.RealmClass;
  * Created by kmikhailovskiy on 08.12.2016.
  */
 
-@RealmClass
 public class NewsItem extends RealmObject {
     @PrimaryKey private int id;
+    private int rssId;
     private String title;
     private String description;
     private Date date;
@@ -25,6 +25,14 @@ public class NewsItem extends RealmObject {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getRssId() {
+        return rssId;
+    }
+
+    public void setRssId(int rssId) {
+        this.rssId = rssId;
     }
 
     public String getTitle() {
@@ -70,7 +78,9 @@ public class NewsItem extends RealmObject {
     @Override
     public String toString() {
         return "NewsItem{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", rssId=" + rssId +
+                ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", date=" + date +
                 ", articleUrl='" + articleUrl + '\'' +
