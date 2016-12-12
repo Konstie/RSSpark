@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,7 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -114,8 +112,6 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
         if (pagerAdapter == null) {
             pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), getNewsFragments(rssDetails), rssDetails);
             viewPager.setAdapter(pagerAdapter);
-        } else {
-            pagerAdapter.notifyDataSetChanged();
         }
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
     }
@@ -150,7 +146,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
             adapter.notifyDataSetChanged();
         }
         pagerAdapter.removeFragment(position);
-        pagerAdapter.notifyDataSetChanged();
+
         if (pagerAdapter.getCount() > 0) {
             viewPager.setCurrentItem(0);
         }

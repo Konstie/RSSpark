@@ -3,7 +3,7 @@ package com.app.rsspark.presenters.news;
 import android.util.Log;
 
 import com.app.rsspark.RSSparkApplication;
-import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
+import com.app.rsspark.domain.contract.RSSParkConstants;
 import com.app.rsspark.domain.models.Channel;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.domain.models.RSS;
@@ -63,7 +63,7 @@ public class NewsPresenter implements Presenter<INewsView> {
         if (newsItems == null) {
             return;
         }
-        currentNewsList = newsItems.sort(RSSParkDatabaseContract.FIELD_RAW_DATE, Sort.DESCENDING);
+        currentNewsList = newsItems.sort(RSSParkConstants.FIELD_RAW_DATE, Sort.DESCENDING);
         view.onNewsLoaded(currentNewsList);
         if (newsItems.isEmpty() && allowLoadingFromNetwork) {
             loadNewsFeedFromNetwork();
@@ -72,11 +72,11 @@ public class NewsPresenter implements Presenter<INewsView> {
 
     public void sortNewsFromCache() {
         Log.w(TAG, "sortNewsFromCache() pressed");
-        if (rssChannel == null || rssChannel.getItemList() == null || rssChannel.getItemList().isEmpty()) {
+        if (rssChannel == null || !rssChannel.isValid() || rssChannel.getItemList() == null || rssChannel.getItemList().isEmpty()) {
             return;
         }
         sortOrder = sortOrder == Sort.DESCENDING ? Sort.ASCENDING : Sort.DESCENDING;
-        currentNewsList = rssChannel.getItemList().sort(RSSParkDatabaseContract.FIELD_RAW_DATE, sortOrder);
+        currentNewsList = rssChannel.getItemList().sort(RSSParkConstants.FIELD_RAW_DATE, sortOrder);
         view.onNewsSorted(currentNewsList);
     }
 

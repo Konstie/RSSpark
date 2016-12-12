@@ -2,10 +2,8 @@ package com.app.rsspark.ui.sections.feed;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.Pair;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -18,7 +16,6 @@ public class RSSPagerAdapter extends FragmentStatePagerAdapter {
     private List<NewsListFragment> fragments;
     private List<String> rssDetails;
     private FragmentManager fragmentManager;
-    private int pagesCount;
 
     public RSSPagerAdapter(FragmentManager fm, List<NewsListFragment> fragments, List<String> rssDetails) {
         super(fm);
@@ -33,15 +30,22 @@ public class RSSPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void addNewFragment(String feedDetails) {
-        fragments.add(NewsListFragment.newInstance(feedDetails));
+        NewsListFragment newsListFragment = NewsListFragment.newInstance(feedDetails);
+        fragments.add(newsListFragment);
         rssDetails.add(feedDetails);
         notifyDataSetChanged();
     }
 
-    public int removeFragment(int position) {
+    public void removeFragment(int position) {
         rssDetails.remove(position);
         fragments.remove(position);
-        return position;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        if (fragments.contains(object)) return fragments.indexOf(object);
+        return POSITION_NONE;
     }
 
     @Override
@@ -56,15 +60,11 @@ public class RSSPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        super.destroyItem(container, position, object);
-    }
-
-    @Override
-    public int getItemPosition(Object object) {
-        int index = fragments.indexOf(object);
-        if (index == -1)
-            return POSITION_NONE;
-        else
-            return index;
+        if (position >= getCount() && object != null) {
+            FragmentManager fragmentManager = ((Fragment) object).getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove((Fragment) object);
+            fragmentTransaction.commitNow();
+        }
     }
 }

@@ -1,11 +1,10 @@
 package com.app.rsspark.domain.repository;
 
-import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
+import com.app.rsspark.domain.contract.RSSParkConstants;
 
 import io.realm.Realm;
 import io.realm.RealmModel;
 import io.realm.RealmObject;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -28,13 +27,13 @@ public abstract class BaseStorage<T extends RealmObject> {
 
     public Observable<RealmResults<T>> getAllItemsSortedByDate(Class<T> instanceClass, Sort order) {
         return realm.where(instanceClass)
-                .isNotNull(RSSParkDatabaseContract.FIELD_SAVED_DATE)
-                .findAllSorted(RSSParkDatabaseContract.FIELD_SAVED_DATE, order)
+                .isNotNull(RSSParkConstants.FIELD_SAVED_DATE)
+                .findAllSorted(RSSParkConstants.FIELD_SAVED_DATE, order)
                 .asObservable();
     }
 
     public void removeItem(T item) {
-        realm.executeTransaction(realm1 -> item.deleteFromRealm());
+        realm.executeTransaction(realm -> item.deleteFromRealm());
     }
 
     public int getMaxItemId(Class<? extends RealmModel> instanceClass) {
@@ -42,6 +41,6 @@ public abstract class BaseStorage<T extends RealmObject> {
         if (realmResults.isEmpty()) {
             return 1;
         }
-        return realmResults.max(RSSParkDatabaseContract.FIELD_ID).intValue() + 1;
+        return realmResults.max(RSSParkConstants.FIELD_ID).intValue() + 1;
     }
 }

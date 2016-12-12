@@ -1,11 +1,10 @@
 package com.app.rsspark.domain.repository;
 
-import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
+import com.app.rsspark.domain.contract.RSSParkConstants;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.domain.models.RssChannel;
 
 import java.util.Date;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -38,8 +37,8 @@ public class NewsStorage extends BaseStorage<NewsItem> implements NewsRepository
     @Override
     public RealmResults<NewsItem> getAllNewsForRssFeed(String feedTitle) {
         RssChannel rssChannel = realm.where(RssChannel.class)
-                .equalTo(RSSParkDatabaseContract.FIELD_TITLE, feedTitle)
-                .findAllSorted(RSSParkDatabaseContract.FIELD_SAVED_DATE).first();
-        return rssChannel.getItemList().sort(RSSParkDatabaseContract.FIELD_DATE);
+                .equalTo(RSSParkConstants.FIELD_TITLE, feedTitle)
+                .findAllSorted(RSSParkConstants.FIELD_SAVED_DATE).first();
+        return rssChannel.getItemList().sort(RSSParkConstants.FIELD_DATE);
     }
 }

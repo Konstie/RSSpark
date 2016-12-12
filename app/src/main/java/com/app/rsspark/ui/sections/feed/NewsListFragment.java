@@ -1,5 +1,6 @@
 package com.app.rsspark.ui.sections.feed;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,11 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.app.rsspark.R;
+import com.app.rsspark.domain.contract.RSSParkConstants;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.presenters.abs.PresenterFactory;
 import com.app.rsspark.presenters.news.INewsView;
 import com.app.rsspark.presenters.news.NewsPresenter;
 import com.app.rsspark.ui.abs.BaseFragment;
+import com.app.rsspark.ui.sections.article.ArticleActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +31,7 @@ import io.realm.Sort;
  * Created by konstie on 11.12.16.
  */
 
-public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> implements INewsView, SwipeRefreshLayout.OnRefreshListener {
+public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> implements INewsView, SwipeRefreshLayout.OnRefreshListener, NewsAdapter.OnItemClickListener {
     private static final String TAG = "NewsListFragment";
     private static final String EXTRA_RSS_FEED_ID = "EXTRA_RSS_FEED_ID";
 
@@ -104,7 +107,7 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     public void onNewsLoaded(RealmResults<NewsItem> newsItems) {
         Log.w(TAG, "onNewsLoaded count: " + newsItems.size());
         if (newsAdapter == null) {
-            newsAdapter = new NewsAdapter(getContext(), newsItems, true);
+            newsAdapter = new NewsAdapter(getContext(), newsItems, true, this);
             newsListView.setAdapter(newsAdapter);
             newsAdapter.notifyDataSetChanged();
         } else {
@@ -166,5 +169,21 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     @NonNull
     public PresenterFactory<NewsPresenter> getPresenterFactory() {
         return () -> new NewsPresenter(newsFeedTitle);
+    }
+
+    @Override
+    public void onArticleSelected(String articleUrl) {
+        startArticleActivity(articleUrl);
+    }
+
+    @Override
+    public void onLinkSelected(String url) {
+
+    }
+
+    private void startArticleActivity(String url) {
+        Intent intent = new Intent(getContext(), ArticleActivity.class);
+        intent.putExtra(RSSParkConstants.EXTRA_ARTICLE_URL, url);
+        startActivity(intent);
     }
 }

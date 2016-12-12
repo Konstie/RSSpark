@@ -3,6 +3,7 @@ package com.app.rsspark.ui.sections.feed;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,16 +15,12 @@ import android.widget.TextView;
 import com.app.rsspark.R;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.utils.FormattingUtils;
-import com.app.rsspark.utils.NewsByDateComparator;
 import com.bumptech.glide.Glide;
-
-import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * Created by konstie on 10.12.16.
@@ -32,11 +29,13 @@ import io.realm.Sort;
 public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.NewsHolder> {
     private static final String TAG = "NewsAdapter";
 
+    private OnItemClickListener clickListener;
     private RealmResults<NewsItem> newsItems;
 
-    public NewsAdapter(@NonNull Context context, @Nullable RealmResults<NewsItem> newsItems, boolean autoUpdate) {
+    public NewsAdapter(@NonNull Context context, @Nullable RealmResults<NewsItem> newsItems, boolean autoUpdate, OnItemClickListener clickListener) {
         super(context, newsItems, autoUpdate);
         this.newsItems = newsItems;
+        this.clickListener = clickListener;
         Log.w(TAG, "NewsAdapter created");
     }
 
@@ -64,9 +63,16 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         } else {
             holder.newsHeaderImageView.setVisibility(View.GONE);
         }
+        holder.layoutRoot.setOnClickListener(view -> {
+            if (clickListener != null && newsItem.getLink() != null && !newsItem.getLink().isEmpty()) {
+                clickListener.onArticleSelected(newsItem.getLink());
+            }
+        });
     }
 
     static class NewsHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.layout_root)
+        CardView layoutRoot;
         @BindView(R.id.news_header_image_view)
         ImageView newsHeaderImageView;
         @BindView(R.id.news_title_text_view)
@@ -80,5 +86,10 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onArticleSelected(String articleUrl);
+        void onLinkSelected(String url);
     }
 }

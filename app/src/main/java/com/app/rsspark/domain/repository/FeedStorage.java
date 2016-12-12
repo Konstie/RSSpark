@@ -2,7 +2,7 @@ package com.app.rsspark.domain.repository;
 
 import android.util.Log;
 
-import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
+import com.app.rsspark.domain.contract.RSSParkConstants;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.network.services.RssRetrievalService;
@@ -56,7 +56,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
     @Override
     public RssChannel findRssSourceByTitle(String title) {
         return realm.where(RssChannel.class)
-                .equalTo(RSSParkDatabaseContract.FIELD_TITLE, title)
+                .equalTo(RSSParkConstants.FIELD_TITLE, title)
                 .findFirst();
     }
 
@@ -75,7 +75,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
             }
             Log.w(TAG, "Completed realm transaction. News items are added");
         });
-        return Observable.just(rssChannel.getItemList().sort(RSSParkDatabaseContract.FIELD_DATE));
+        return Observable.just(rssChannel.getItemList().sort(RSSParkConstants.FIELD_DATE));
     }
 
     private boolean newsItemAlreadyExistInList(String newsTitle) {
