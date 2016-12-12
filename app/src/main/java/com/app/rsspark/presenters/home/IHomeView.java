@@ -1,6 +1,8 @@
 package com.app.rsspark.presenters.home;
 
-import com.app.rsspark.domain.models.RssItem;
+import android.util.Pair;
+
+import com.app.rsspark.domain.models.RssChannel;
 
 import java.util.List;
 
@@ -11,6 +13,6 @@ import io.realm.RealmResults;
  */
 
 public interface IHomeView {
-    void onRssSourcesInitialized(RealmResults<RssItem> rssItems, List<Integer> rssIds, List<String> rssTitles);
-    void onNewRssSourceAdded(RssItem rssItem);
+    void onRssSourcesInitialized(RealmResults<RssChannel> rssChannels, List<String> rssItemsDetails);
+    void onNewRssSourceAdded(RssChannel rssChannel);
 }

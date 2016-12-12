@@ -2,15 +2,14 @@ package com.app.rsspark.ui.sections.home;
 
 import android.os.Bundle;
 import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,13 +23,15 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.app.rsspark.R;
-import com.app.rsspark.domain.models.RssItem;
+import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.presenters.abs.PresenterFactory;
 import com.app.rsspark.presenters.abs.PresenterLoader;
 import com.app.rsspark.presenters.home.HomePresenter;
 import com.app.rsspark.presenters.home.IHomeView;
+import com.app.rsspark.ui.sections.feed.NewsListFragment;
 import com.app.rsspark.ui.sections.feed.RSSPagerAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,9 +39,11 @@ import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
 public class HomeActivity extends AppCompatActivity implements IHomeView, View.OnClickListener,
-        RssSourceCreationDialog.RssDialogListener, LoaderManager.LoaderCallbacks<HomePresenter> {
+        RssChannelCreationDialog.RssDialogListener, LoaderManager.LoaderCallbacks<HomePresenter>,
+        FeedItemsAdapter.RssChannelRemoveListener {
     private static final int LOADER_ID = 101;
     private static final String RSS_DIALOG_TAG = "ADD_RSS";
+    private static final String TAG = "HomeActivity";
 
     private PresenterFactory<HomePresenter> presenterFactory = HomePresenter::new;
     private HomePresenter presenter;
@@ -105,55 +108,82 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     }
 
     @Override
-    public void onRssSourcesInitialized(RealmResults<RssItem> rssItems, List<Integer> rssIds, List<String> rssTitles) {
-        adapter = new FeedItemsAdapter(HomeActivity.this, rssItems, true);
-        rssMenuListView.setAdapter(adapter);
-        invalidateRssFeedsPager(rssIds, rssTitles);
+    public void onRssSourcesInitialized(RealmResults<RssChannel> rssChannels, List<String> rssDetails) {
+        Log.d(TAG, "onRssSourcesInitialized: " + rssChannels.size());
+        adapter = new FeedItemsAdapter(HomeActivity.this, rssChannels, true, this);
+        runOnUiThread(() -> {
+            rssMenuListView.setAdapter(adapter);
+            invalidateRssFeedsPager(rssDetails);
+        });
     }
 
-    private void invalidateRssFeedsPager(List<Integer> rssIds, List<String> rssTitles) {
+    private void invalidateRssFeedsPager(List<String> rssDetails) {
+        Log.d(TAG, "invalidateRssFeedsPager. Pager adapter: " + pagerAdapter);
         tabLayout.setTabGravity(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setVisibility(rssDetails.isEmpty() ? View.GONE : View.VISIBLE);
         if (pagerAdapter == null) {
-            pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), rssIds, rssTitles);
+            pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), getNewsFragments(rssDetails), rssDetails);
             viewPager.setAdapter(pagerAdapter);
         } else {
             pagerAdapter.notifyDataSetChanged();
         }
+        viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+    }
+
+    private List<NewsListFragment> getNewsFragments(List<String> rssChannelIds) {
+        List<NewsListFragment> fragments = new ArrayList<>();
+        for (String rssFeedDetails : rssChannelIds) {
+            fragments.add(NewsListFragment.newInstance(rssFeedDetails));
+        }
+        return fragments;
     }
 
     @Override
-    public void onSaveNewRssFeedClicked(String rssTitle, String rssUrl) {
-        presenter.saveNewRssFeed(rssTitle, rssUrl);
+    public void onSaveNewRssFeedClicked(String rssTitle) {
+        presenter.saveNewRssFeed(rssTitle);
     }
 
     @Override
-    public void onNewRssSourceAdded(RssItem rssItem) {
+    public void onNewRssSourceAdded(RssChannel rssChannel) {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
         if (pagerAdapter != null) {
-            viewPager.setAdapter(null);
-            viewPager.setAdapter(pagerAdapter);
+            pagerAdapter.addNewFragment(rssChannel.getTitle());
         }
         drawer.closeDrawer(GravityCompat.START);
-        // todo: 1. refresh tabLayout; 2. update viewpager
+    }
+
+    @Override
+    public void onChannelRemoved(RssChannel rssChannel, int position) {
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+        pagerAdapter.removeFragment(position);
+        pagerAdapter.notifyDataSetChanged();
+        if (pagerAdapter.getCount() > 0) {
+            viewPager.setCurrentItem(0);
+        }
     }
 
     @Override
     public Loader<HomePresenter> onCreateLoader(int id, Bundle args) {
+        Log.w(TAG, "LoaderCallbacks -> onCreateLoader");
         return new PresenterLoader<>(HomeActivity.this, presenterFactory);
     }
 
     @Override
     public void onLoadFinished(Loader<HomePresenter> loader, HomePresenter presenter) {
+        Log.w(TAG, "LoaderCallbacks -> onLoadFinished");
         this.presenter = presenter;
         this.presenter.onViewAttached(HomeActivity.this);
-        this.presenter.loadStoredFeeds();
+        this.presenter.loadStoredChannels();
     }
 
     @Override
     public void onLoaderReset(Loader<HomePresenter> loader) {
+        Log.w(TAG, "LoaderCallbacks -> onLoaderReset");
         this.presenter.onViewDetached();
         this.presenter.onDestroyed();
         this.presenter = null;
@@ -167,7 +197,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     }
 
     private void showNewFeedDialog() {
-        RssSourceCreationDialog dialog = new RssSourceCreationDialog();
+        RssChannelCreationDialog dialog = new RssChannelCreationDialog();
         dialog.show(getSupportFragmentManager(), RSS_DIALOG_TAG);
     }
 

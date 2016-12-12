@@ -25,6 +25,7 @@ android {
 def supportLibVersion = "25.0.1"
 def daggerVersion = "2.7"
 def rxVersion = "1.2.3"
+def retrofitVersion = "2.1.0"
 
 android {
     compileOptions {
@@ -46,7 +47,14 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    compile ("com.squareup.retrofit2:converter-simplexml:$retrofitVersion") {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'stax', module: 'stax'
+    }
+    compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
     compile "io.reactivex:rxjava:$rxVersion"
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'org.jsoup:jsoup:1.10.1'

@@ -10,4 +10,5 @@ import io.realm.RealmResults;
 
 public interface INewsView {
     void onNewsLoaded(RealmResults<NewsItem> newsItems);
+    void onInvalidFeed();
 }

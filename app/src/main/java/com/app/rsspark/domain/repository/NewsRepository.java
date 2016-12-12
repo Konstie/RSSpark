@@ -3,7 +3,9 @@ package com.app.rsspark.domain.repository;
 import com.app.rsspark.domain.models.NewsItem;
 
 import java.util.Date;
+import java.util.List;
 
+import io.realm.RealmResults;
 import rx.Observable;
 
 /**
@@ -13,4 +15,5 @@ import rx.Observable;
 
 public interface NewsRepository {
     Observable<NewsItem> newNewsItem(String title, String description, String link, String imageUrl, Date date);
+    RealmResults<NewsItem> getAllNewsForRssFeed(String feedTitle);
 }

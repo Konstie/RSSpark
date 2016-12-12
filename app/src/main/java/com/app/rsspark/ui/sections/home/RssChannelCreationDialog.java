@@ -26,17 +26,16 @@ import butterknife.ButterKnife;
  * Created by konstie on 10.12.16.
  */
 
-public class RssSourceCreationDialog extends DialogFragment {
-    private static final String TAG = "RssSourceCreationDialog";
+public class RssChannelCreationDialog extends DialogFragment {
+    private static final String TAG = "RssChannelCreationDialog";
 
     private RssDialogListener listener;
 
     @BindView(R.id.root_view) LinearLayout rootLayout;
     @BindView(R.id.feed_title_edit_text) EditText titleEditText;
-    @BindView(R.id.feed_url_edit_text) EditText urlEditText;
 
     public interface RssDialogListener {
-        void onSaveNewRssFeedClicked(String rssTitle, String rssUrl);
+        void onSaveNewRssFeedClicked(String rssTitle);
         void showInvalidNewRssMessage(@StringRes int messageRes);
     }
 
@@ -75,22 +74,15 @@ public class RssSourceCreationDialog extends DialogFragment {
     }
 
     private void onSavePressed() {
-        String currentUrl = urlEditText.getText().toString();
         String currentTitle = titleEditText.getText().toString();
-        Log.d(TAG, "Clicked on Save button. Listener: " + listener + ", currentUrl: " + currentUrl
-                + ", currentTitle: " + currentTitle);
         if (listener == null) {
             return;
         }
-        if (!currentTitle.isEmpty() && !currentUrl.isEmpty() && isUrlMatching(currentUrl)) {
-            listener.onSaveNewRssFeedClicked(currentTitle, currentUrl);
+        if (!currentTitle.isEmpty()) {
+            listener.onSaveNewRssFeedClicked(currentTitle);
             dismiss();
-        } else if (currentTitle.isEmpty()) {
+        } else  {
             listener.showInvalidNewRssMessage(R.string.feed_dialog_empty_title);
-        } else if (currentUrl.isEmpty() || !isUrlMatching(currentUrl)) {
-            listener.showInvalidNewRssMessage(R.string.feed_dialog_invalid_url);
-        } else {
-            listener.showInvalidNewRssMessage(R.string.feed_dialog_could_not_save_feed);
         }
     }
 

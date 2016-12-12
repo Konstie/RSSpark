@@ -35,6 +35,7 @@ public abstract class BaseFragment<P extends Presenter<V>, V> extends Fragment {
         @Override
         public void onLoadFinished(Loader<P> loader, P presenter) {
             BaseFragment.this.presenter = presenter;
+            onPresenterPrepared(presenter);
         }
 
         @Override

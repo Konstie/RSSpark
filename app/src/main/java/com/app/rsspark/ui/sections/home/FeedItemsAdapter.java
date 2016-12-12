@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.rsspark.R;
-import com.app.rsspark.domain.models.RssItem;
+import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.injection.components.DaggerDatabaseComponent;
 import com.app.rsspark.injection.components.DatabaseComponent;
@@ -25,16 +25,18 @@ import io.realm.RealmResults;
  * Created by kmikhailovskiy on 08.12.2016.
  */
 
-public class FeedItemsAdapter extends RealmRecyclerViewAdapter<RssItem, FeedItemsAdapter.FeedItemHolder> {
-    private RealmResults<RssItem> rssSources;
+public class FeedItemsAdapter extends RealmRecyclerViewAdapter<RssChannel, FeedItemsAdapter.FeedItemHolder> {
+    private RealmResults<RssChannel> rssSources;
     private DatabaseComponent databaseComponent;
     private FeedStorage feedStorage;
+    private RssChannelRemoveListener listener;
 
-    public FeedItemsAdapter(@NonNull Context context, @Nullable RealmResults<RssItem> rssSources, boolean autoUpdate) {
+    public FeedItemsAdapter(@NonNull Context context, @Nullable RealmResults<RssChannel> rssSources, boolean autoUpdate, RssChannelRemoveListener listener) {
         super(context, rssSources, autoUpdate);
         this.rssSources = rssSources;
         this.databaseComponent = DaggerDatabaseComponent.builder().build();
         this.feedStorage = databaseComponent.feedStorage();
+        this.listener = listener;
     }
 
     @Override
@@ -45,15 +47,18 @@ public class FeedItemsAdapter extends RealmRecyclerViewAdapter<RssItem, FeedItem
 
     @Override
     public void onBindViewHolder(FeedItemHolder holder, int position) {
-        RssItem rssSource = rssSources.get(position);
+        RssChannel rssSource = rssSources.get(position);
         holder.titleTextView.setText(rssSource.getTitle());
         holder.buttonRemoveFeed.setOnClickListener(btn -> {
-            onRemoveClicked(rssSource);
+            onRemoveClicked(rssSource, position);
         });
     }
 
-    private void onRemoveClicked(RssItem rssItem) {
-        feedStorage.removeItem(rssItem);
+    private void onRemoveClicked(RssChannel rssChannel, int position) {
+        feedStorage.removeItem(rssChannel);
+        if (listener != null) {
+            listener.onChannelRemoved(rssChannel, position);
+        }
     }
 
     static class FeedItemHolder extends RecyclerView.ViewHolder {
@@ -64,5 +69,9 @@ public class FeedItemsAdapter extends RealmRecyclerViewAdapter<RssItem, FeedItem
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    interface RssChannelRemoveListener {
+        void onChannelRemoved(RssChannel rssChannel, int position);
     }
 }

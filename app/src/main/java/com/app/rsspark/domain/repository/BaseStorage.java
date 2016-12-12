@@ -23,7 +23,7 @@ public abstract class BaseStorage<T extends RealmObject> {
     }
 
     public Observable<RealmResults<T>> getAllItems(Class<T> instanceClass) {
-        return realm.where(instanceClass).findAllAsync().asObservable();
+        return realm.where(instanceClass).findAll().asObservable();
     }
 
     public Observable<RealmResults<T>> getAllItemsSortedByDate(Class<T> instanceClass, Sort order) {

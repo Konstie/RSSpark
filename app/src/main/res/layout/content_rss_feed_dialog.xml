@@ -17,15 +17,4 @@
             android:hint="@string/feed_dialog_title"
             android:lines="1"/>
     </android.support.design.widget.TextInputLayout>
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/layout_input_url"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/feed_url_edit_text"
-            android:inputType="textUri"
-            android:hint="@string/feed_dialog_url" />
-    </android.support.design.widget.TextInputLayout>
 </LinearLayout>

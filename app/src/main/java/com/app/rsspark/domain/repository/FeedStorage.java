@@ -1,68 +1,104 @@
 package com.app.rsspark.domain.repository;
 
+import android.util.Log;
+
 import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
 import com.app.rsspark.domain.models.NewsItem;
-import com.app.rsspark.domain.models.RssItem;
+import com.app.rsspark.domain.models.RssChannel;
+import com.app.rsspark.network.services.RssRetrievalService;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.Date;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by konstie on 10.12.16.
  */
 
-public class FeedStorage extends BaseStorage<RssItem> implements FeedsRepository {
+public class FeedStorage extends BaseStorage<RssChannel> implements FeedsRepository {
+    private static final String TAG = "FeedStorage";
+    private static final String HTML_TAG_IMG = "img";
+    private static final String HTML_ATTR_SRC = "src";
+
+    @Inject RssRetrievalService rssService;
+
     public FeedStorage(Realm realm) {
         super(realm);
     }
 
     @Override
-    public Observable<RssItem> newRssSource(String title, String url) {
-        return Observable.create(new Observable.OnSubscribe<RssItem>() {
+    public Observable<RssChannel> newRssSource(String title) {
+        return Observable.create(new Observable.OnSubscribe<RssChannel>() {
             @Override
-            public void call(Subscriber<? super RssItem> subscriber) {
+            public void call(Subscriber<? super RssChannel> subscriber) {
                 realm.beginTransaction();
-                int newId = getMaxItemId(RssItem.class);
-                RssItem rssItem = realm.createObject(RssItem.class, newId);
-                rssItem.setTitle(title);
-                rssItem.setSavedDate(new Date());
-                rssItem.setUrl(url);
+                RssChannel rssChannel = realm.createObject(RssChannel.class, title);
+                rssChannel.setSavedDate(new Date());
                 realm.commitTransaction();
-                subscriber.onNext(rssItem);
+                subscriber.onNext(rssChannel);
                 subscriber.onCompleted();
             }
         });
     }
 
     @Override
-    public Observable<RssItem> findRssSourceById(int id) {
-        return realm.where(RssItem.class)
-                .equalTo(RSSParkDatabaseContract.FIELD_ID, id)
-                .findFirst()
-                .asObservable();
+    public RssChannel findRssSourceByTitle(String title) {
+        return realm.where(RssChannel.class)
+                .equalTo(RSSParkDatabaseContract.FIELD_TITLE, title)
+                .findFirst();
     }
 
     @Override
-    public Observable<RealmResults<NewsItem>> findNewsForRssFeedWithId(int id) {
-        return findRssSourceById(id)
-                .flatMap(new Func1<RssItem, Observable<RealmResults<NewsItem>>>() {
-                    @Override
-                    public Observable<RealmResults<NewsItem>> call(RssItem rssItem) {
-                        RealmList<NewsItem> newsItems = rssItem.getNewsItems();
-                        if (newsItems == null || newsItems.isEmpty()) {
-                            return Observable.empty();
-                        }
-                        RealmResults<NewsItem> newsItemsSorted = newsItems
-                                .sort(RSSParkDatabaseContract.FIELD_SAVED_DATE, Sort.DESCENDING);
-                        return Observable.just(newsItemsSorted);
-                    }
-                });
+    public Observable<RealmResults<NewsItem>> saveNewsToCache(RssChannel rssChannel, RealmList<NewsItem> newsItems) {
+        Log.d(TAG, "saveNewsToCache // newsItems size: " + newsItems.size());
+
+        realm.executeTransaction(realm1 -> {
+            Log.d(TAG, "realm trans. started");
+            for (NewsItem newsItem : newsItems) {
+                if (!newsItemAlreadyExistInList(newsItem.getTitle())) {
+                    setNewsDescription(newsItem);
+                    realm.copyToRealmOrUpdate(newsItem);
+                    rssChannel.getItemList().add(newsItem);
+                }
+            }
+            Log.w(TAG, "Completed realm transaction. News items are added");
+        });
+        return Observable.just(rssChannel.getItemList().sort(RSSParkDatabaseContract.FIELD_DATE));
+    }
+
+    private boolean newsItemAlreadyExistInList(String newsTitle) {
+        RealmResults<RssChannel> newsItems = realm.where(RssChannel.class).contains("itemList.title", newsTitle).findAll();
+        Log.d(TAG, "newsItemAlreadyExistInList for " + newsTitle + " = " + newsItems.size());
+        return !newsItems.isEmpty();
+    }
+
+    private RealmList<NewsItem> getRealmListOf(List<NewsItem> newsItems) {
+        RealmList<NewsItem> news = new RealmList<>();
+        for (NewsItem newsItem : newsItems) {
+            news.add(newsItem);
+        }
+        return news;
+    }
+
+    private void setNewsDescription(NewsItem newsItem) {
+        Document document = Jsoup.parse(newsItem.getDescription());
+        Element image = document.select(HTML_TAG_IMG).first();
+        if (image != null) {
+            String imageUrl = image.absUrl(HTML_ATTR_SRC);
+            newsItem.setImageUrl(imageUrl);
+        }
+        newsItem.setDescription(document.body().text());
+        Log.d(TAG, "Settings news description: " + newsItem.getImageUrl() + ", " + newsItem.getDescription());
     }
 }

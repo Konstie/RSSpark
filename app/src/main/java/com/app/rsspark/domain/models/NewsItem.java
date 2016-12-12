@@ -1,5 +1,8 @@
 package com.app.rsspark.domain.models;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -10,29 +13,28 @@ import io.realm.annotations.RealmClass;
  * Created by kmikhailovskiy on 08.12.2016.
  */
 
+@Root(name = "item", strict = false)
 public class NewsItem extends RealmObject {
-    @PrimaryKey private int id;
-    private int rssId;
-    private String title;
+    @Element(name = "title", required = true)
+    @PrimaryKey private String title;
+    @Element(name = "link", required = true)
+    private String link;
+    @Element(name = "description", required = true)
     private String description;
-    private Date date;
-    private String articleUrl;
+    @Element(name = "pubDate", required = false)
+    private String pubDate;
     private String imageUrl;
+    private int rssFeedId;
 
-    public int getId() {
-        return id;
+    public NewsItem() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getRssFeedId() {
+        return rssFeedId;
     }
 
-    public int getRssId() {
-        return rssId;
-    }
-
-    public void setRssId(int rssId) {
-        this.rssId = rssId;
+    public void setRssFeedId(int rssFeedId) {
+        this.rssFeedId = rssFeedId;
     }
 
     public String getTitle() {
@@ -51,12 +53,20 @@ public class NewsItem extends RealmObject {
         this.description = description;
     }
 
-    public Date getDate() {
-        return date;
+    public String getLink() {
+        return link;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
     }
 
     public String getImageUrl() {
@@ -67,24 +77,13 @@ public class NewsItem extends RealmObject {
         this.imageUrl = imageUrl;
     }
 
-    public String getArticleUrl() {
-        return articleUrl;
-    }
-
-    public void setArticleUrl(String articleUrl) {
-        this.articleUrl = articleUrl;
-    }
-
     @Override
     public String toString() {
         return "NewsItem{" +
-                "id=" + id +
-                ", rssId=" + rssId +
                 ", title='" + title + '\'' +
+                ", link='" + link + '\'' +
                 ", description='" + description + '\'' +
-                ", date=" + date +
-                ", articleUrl='" + articleUrl + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", pubDate='" + pubDate + '\'' +
                 '}';
     }
 }

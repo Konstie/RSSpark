@@ -6,8 +6,6 @@ import android.content.res.Resources;
 
 import com.app.rsspark.injection.components.AppComponent;
 import com.app.rsspark.injection.components.DaggerAppComponent;
-import com.app.rsspark.injection.components.DaggerDatabaseComponent;
-import com.app.rsspark.injection.components.DatabaseComponent;
 import com.app.rsspark.injection.modules.AppModule;
 
 import io.realm.Realm;
@@ -27,6 +25,10 @@ public class RSSparkApplication extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
+    }
+
+    public static AppComponent getDaggerAppComponent() {
+        return appComponent;
     }
 
     public static Context getContext() {
