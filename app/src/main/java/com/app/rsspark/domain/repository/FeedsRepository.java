@@ -16,4 +16,5 @@ public interface FeedsRepository {
     Observable<RssChannel> newRssSource(String title);
     RssChannel findRssSourceByTitle(String title);
     Observable<RealmResults<NewsItem>> saveNewsToCache(RssChannel rssChannel, RealmList<NewsItem> newsItems);
+    void removeRssChannelByPrimaryKey(String title);
 }

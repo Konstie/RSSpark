@@ -39,14 +39,14 @@ import io.realm.RealmResults;
 
 public class HomeActivity extends AppCompatActivity implements IHomeView, View.OnClickListener,
         RssChannelCreationDialog.RssDialogListener, LoaderManager.LoaderCallbacks<HomePresenter>,
-        FeedItemsAdapter.RssChannelRemoveListener {
+        RssChannelsAdapter.RssChannelRemoveListener {
     private static final int LOADER_ID = 101;
     private static final String RSS_DIALOG_TAG = "ADD_RSS";
     private static final String TAG = "HomeActivity";
 
     private PresenterFactory<HomePresenter> presenterFactory = HomePresenter::new;
     private HomePresenter presenter;
-    private FeedItemsAdapter adapter;
+    private RssChannelsAdapter adapter;
     private RSSPagerAdapter pagerAdapter;
 
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
@@ -97,9 +97,9 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     }
 
     @Override
-    public void onRssSourcesInitialized(RealmResults<RssChannel> rssChannels, List<String> rssDetails) {
+    public void onRssSourcesInitialized(List<RssChannel> rssChannels, List<String> rssDetails) {
         Log.d(TAG, "onRssSourcesInitialized: " + rssChannels.size());
-        adapter = new FeedItemsAdapter(HomeActivity.this, rssChannels, true, this);
+        adapter = new RssChannelsAdapter(HomeActivity.this, rssChannels, this);
         runOnUiThread(() -> {
             rssMenuListView.setAdapter(adapter);
             invalidateRssFeedsPager(rssDetails);
@@ -145,9 +145,9 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
 
     @Override
     public void onChannelRemoved(RssChannel rssChannel, int position) {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
+//        if (adapter != null) {
+//            adapter.notifyDataSetChanged();
+//        }
 //        pagerAdapter.removeFragment(position);
 //
 //        if (pagerAdapter.getCount() > 0) {
@@ -171,7 +171,10 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
 
     @Override
     public void onLoaderReset(Loader<HomePresenter> loader) {
-        Log.w(TAG, "LoaderCallbacks -> onLoaderReset");
+        Log.i(TAG, "LoaderCallbacks -> onLoaderReset: isChangingConfigurations {" + isChangingConfigurations() + "}");
+        if (!isChangingConfigurations()) {
+            this.presenter.removeAllRedundantRssChannels();
+        }
         this.presenter.onViewDetached();
         this.presenter.onDestroyed();
         this.presenter = null;
@@ -192,5 +195,13 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     @Override
     public void showInvalidNewRssMessage(@StringRes int messageRes) {
         Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!isChangingConfigurations()) {
+            presenter.removeAllRedundantRssChannels();
+        }
+        super.onDestroy();
     }
 }

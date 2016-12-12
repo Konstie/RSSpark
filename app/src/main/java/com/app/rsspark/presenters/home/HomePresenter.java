@@ -3,6 +3,7 @@ package com.app.rsspark.presenters.home;
 import android.util.Log;
 import android.util.Pair;
 
+import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.injection.components.DaggerDatabaseComponent;
@@ -30,7 +31,7 @@ public class HomePresenter implements Presenter<IHomeView> {
     @Inject FeedStorage feedStorage;
 
     public HomePresenter() {
-        DatabaseComponent databaseComponent = DaggerDatabaseComponent.builder().build();
+        DatabaseComponent databaseComponent = RSSparkApplication.getDatabaseComponent();
         databaseComponent.inject(this);
         this.rssChannelsDetails = new ArrayList<>();
     }
@@ -53,7 +54,8 @@ public class HomePresenter implements Presenter<IHomeView> {
                     Log.w(TAG, "Loaded RSS-channels successfully: " + rssItems);
                     rssChannelsDetails.clear();
                     rssChannelsDetails.addAll(getRssSourcesDetails(rssItems));
-                    view.onRssSourcesInitialized(rssItems, rssChannelsDetails);
+                    List<RssChannel> rssChannels = new ArrayList<>(rssItems);
+                    view.onRssSourcesInitialized(rssChannels, rssChannelsDetails);
                 }, throwable -> {
                     Log.e(TAG, "Could not load feeds saved by user: " + throwable.getMessage());
                 });
@@ -77,6 +79,10 @@ public class HomePresenter implements Presenter<IHomeView> {
             rssTitles.add(rssChannel.getTitle());
         }
         return rssTitles;
+    }
+
+    public void removeAllRedundantRssChannels() {
+        feedStorage.removeCheckedRssChannels();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class NewsPresenter implements Presenter<INewsView> {
     public NewsPresenter(String title) {
         this.newsFeedTitle = title;
         this.sortOrder = Sort.DESCENDING; // news sort order by default
-        DatabaseComponent databaseComponent = DaggerDatabaseComponent.builder().build();
+        DatabaseComponent databaseComponent = RSSparkApplication.getDatabaseComponent();
         AppComponent appComponent = RSSparkApplication.getDaggerAppComponent();
         appComponent.inject(this);
         feedStorage = databaseComponent.feedStorage();

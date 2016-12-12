@@ -8,6 +8,7 @@ import com.app.rsspark.injection.scopes.ForApplication;
 import com.app.rsspark.presenters.abs.Presenter;
 import com.app.rsspark.presenters.home.HomePresenter;
 import com.app.rsspark.presenters.news.NewsPresenter;
+import com.app.rsspark.ui.sections.home.RssChannelsAdapter;
 
 import javax.inject.Singleton;
 
@@ -25,4 +26,5 @@ public interface DatabaseComponent {
     FeedStorage feedStorage();
     NewsStorage newsStorage();
     void inject(HomePresenter presenter);
+    void inject(RssChannelsAdapter adapter);
 }

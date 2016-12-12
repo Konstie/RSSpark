@@ -6,7 +6,10 @@ import android.content.res.Resources;
 
 import com.app.rsspark.injection.components.AppComponent;
 import com.app.rsspark.injection.components.DaggerAppComponent;
+import com.app.rsspark.injection.components.DaggerDatabaseComponent;
+import com.app.rsspark.injection.components.DatabaseComponent;
 import com.app.rsspark.injection.modules.AppModule;
+import com.app.rsspark.injection.modules.DatabaseModule;
 
 import io.realm.Realm;
 
@@ -16,6 +19,7 @@ import io.realm.Realm;
 
 public class RSSparkApplication extends Application {
     private static AppComponent appComponent = null;
+    private static DatabaseComponent databaseComponent = null;
 
     @Override
     public void onCreate() {
@@ -25,10 +29,18 @@ public class RSSparkApplication extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
+
+        databaseComponent = DaggerDatabaseComponent.builder()
+                .databaseModule(new DatabaseModule())
+                .build();
     }
 
     public static AppComponent getDaggerAppComponent() {
         return appComponent;
+    }
+
+    public static DatabaseComponent getDatabaseComponent() {
+        return databaseComponent;
     }
 
     public static Context getContext() {
