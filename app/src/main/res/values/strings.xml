@@ -6,6 +6,8 @@
     <string name="menu_sort">Sort By Date</string>
 
     <string name="action_settings">Settings</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Back</string>
     <string name="drawer_add_new_rss">Add RSS feed</string>
     <string name="feed_dialog_save">Save</string>
     <string name="feed_dialog_cancel">Cancel</string>
@@ -15,4 +17,8 @@
     <string name="feed_dialog_invalid_url">Please, check the URL. It seems to be incorrect or empty</string>
     <string name="feed_dialog_could_not_save_feed">Could not save RSS-source. Please, try again</string>
     <string name="feeds_no_added">Could not find any RSS feeds. You can add some with a drawer menu on the left</string>
+    <string name="feeds_unsubscribed_from_channel">You have unsubscribed from %1$s RSS-channel updates.</string>
+    <string name="feeds_channels_limit">Hey, performance matters. We have set a limit for active feeds to subscribe to 7 to keep your device safe from performance issue and huge amount of network calls.</string>
+    <string name="news_no_items_found">Unfortunately, no news have been found in this channel</string>
+    <string name="feeds_unsubscribe">Please, keep in mind that as the next session starts you will not see this feed on application\'s home screen</string>
 </resources>

@@ -12,7 +12,9 @@
         <RelativeLayout
             android:id="@+id/btn_add_feed"
             android:layout_width="match_parent"
+            android:clickable="true"
             android:layout_height="@dimen/feeds_item_height"
+            android:background="?attr/selectableItemBackground"
             android:layout_alignParentBottom="true">
             <TextView
                 android:layout_marginStart="@dimen/text_margin"

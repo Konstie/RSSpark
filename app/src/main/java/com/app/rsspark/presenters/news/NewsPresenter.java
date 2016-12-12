@@ -11,7 +11,6 @@ import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.domain.repository.NewsStorage;
 import com.app.rsspark.injection.components.AppComponent;
-import com.app.rsspark.injection.components.DaggerDatabaseComponent;
 import com.app.rsspark.injection.components.DatabaseComponent;
 import com.app.rsspark.network.ApiInterceptor;
 import com.app.rsspark.network.services.RssRetrievalService;

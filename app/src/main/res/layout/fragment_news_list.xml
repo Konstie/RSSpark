@@ -5,10 +5,25 @@
     android:id="@+id/layout_swipe_to_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:id="@+id/news_list_view">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:id="@+id/news_list_view">
+        </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:id="@+id/no_news_placeholder_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:textSize="@dimen/news_card_subtext_font_size"
+            android:textColor="@color/color_secondary_text"
+            android:text="@string/news_no_items_found"/>
+    </RelativeLayout>
+
 </android.support.v4.widget.SwipeRefreshLayout>

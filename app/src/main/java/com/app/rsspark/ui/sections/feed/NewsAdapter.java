@@ -71,7 +71,7 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         }
         holder.layoutRoot.setOnClickListener(view -> {
             if (clickListener != null && newsItem.getLink() != null && !newsItem.getLink().isEmpty()) {
-                clickListener.onArticleSelected(newsItem.getLink());
+                clickListener.onLinkSelected(newsItem.getLink(), newsItem.getTitle());
             }
         });
     }
@@ -83,7 +83,7 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
                 Log.w(TAG, "Clicked on a link: " + span.getURL());
-                clickListener.onArticleSelected(span.getURL());
+                clickListener.onLinkSelected(span.getURL(), null);
             }
         };
         strBuilder.setSpan(clickable, start, end, flags);
@@ -122,7 +122,6 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
     }
 
     public interface OnItemClickListener {
-        void onArticleSelected(String articleUrl);
-        void onLinkSelected(String url);
+        void onLinkSelected(String articleUrl, String articleTitle);
     }
 }

@@ -5,16 +5,12 @@ import android.content.res.Resources;
 
 import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.injection.modules.AppModule;
-import com.app.rsspark.injection.modules.DatabaseModule;
 import com.app.rsspark.injection.modules.NetworkModule;
 import com.app.rsspark.injection.scopes.ForApplication;
-import com.app.rsspark.network.ApiInterceptor;
 import com.app.rsspark.presenters.news.NewsPresenter;
+import com.app.rsspark.utils.PreferencesHelper;
 
 import dagger.Component;
-import io.realm.Realm;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
 
 /**
  * Created by konstie on 10.12.16.
@@ -24,6 +20,7 @@ import retrofit2.Retrofit;
 public interface AppComponent {
     Context appContext();
     Resources resources();
+    PreferencesHelper preferencesHelper();
     void inject(NewsPresenter newsPresenter);
     void inject(FeedStorage feedStorage);
 }

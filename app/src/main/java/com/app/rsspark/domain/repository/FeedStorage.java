@@ -53,6 +53,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
                 realm.beginTransaction();
                 RssChannel rssChannel = realm.createObject(RssChannel.class, title);
                 rssChannel.setSavedDate(new Date());
+                rssChannel.setWillBeRemoved(false);
                 realm.commitTransaction();
                 subscriber.onNext(rssChannel);
                 subscriber.onCompleted();
@@ -100,6 +101,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
     public void addRssChannelToRemove(RssChannel rssChannelToRemove) {
         Log.i(TAG, "Added RSS Channel to remove: " + rssChannelToRemove);
         rssChannelsToRemove.add(rssChannelToRemove);
+        realm.executeTransaction(realm1 -> rssChannelToRemove.setWillBeRemoved(true));
     }
 
     public void removeCheckedRssChannels() {

@@ -1,8 +1,10 @@
 package com.app.rsspark.ui.sections.home;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +16,9 @@ import com.app.rsspark.R;
 import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.domain.repository.FeedStorage;
-import com.app.rsspark.injection.components.DaggerDatabaseComponent;
+import com.app.rsspark.injection.components.AppComponent;
 import com.app.rsspark.injection.components.DatabaseComponent;
+import com.app.rsspark.utils.PreferencesHelper;
 
 import java.util.List;
 
@@ -23,8 +26,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.RealmRecyclerViewAdapter;
-import io.realm.RealmResults;
 
 /**
  * Created by kmikhailovskiy on 08.12.2016.
@@ -35,15 +36,18 @@ public class RssChannelsAdapter extends RecyclerView.Adapter<RssChannelsAdapter.
     private List<RssChannel> rssSources;
     private DatabaseComponent databaseComponent;
     @Inject FeedStorage feedStorage;
+    private PreferencesHelper preferencesHelper;
     private RssChannelRemoveListener listener;
 
     public RssChannelsAdapter(@NonNull Context context, @Nullable List<RssChannel> rssSources, RssChannelRemoveListener listener) {
         super();
         this.context = context;
         this.rssSources = rssSources;
+        this.listener = listener;
         this.databaseComponent = RSSparkApplication.getDatabaseComponent();
         this.databaseComponent.inject(this);
-        this.listener = listener;
+        AppComponent appComponent = RSSparkApplication.getDaggerAppComponent();
+        preferencesHelper = appComponent.preferencesHelper();
     }
 
     @Override
@@ -73,9 +77,25 @@ public class RssChannelsAdapter extends RecyclerView.Adapter<RssChannelsAdapter.
         rssSources.remove(position);
         feedStorage.addRssChannelToRemove(rssChannel);
         notifyDataSetChanged();
-//        if (listener != null) {
-//            listener.onChannelRemoved(rssChannel, position);
-//        }
+        if (listener != null && preferencesHelper.hasSeenFeedRemovalWarningDialog(context)) {
+            listener.onChannelRemoved(rssChannel.getTitle());
+        } else if (!preferencesHelper.hasSeenFeedRemovalWarningDialog(context)){
+            showWarningDialog(rssChannel.getTitle());
+            preferencesHelper.setSeenFeedRemovalWarningDialog(context, true);
+        }
+    }
+
+    private void showWarningDialog(String rssTitle) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setMessage(R.string.feeds_unsubscribe)
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
+                    if (listener != null) {
+                        listener.onChannelRemoved(rssTitle);
+                    }
+                })
+                .setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {})
+                .create();
+        dialogBuilder.show();
     }
 
     static class FeedItemHolder extends RecyclerView.ViewHolder {
@@ -89,6 +109,6 @@ public class RssChannelsAdapter extends RecyclerView.Adapter<RssChannelsAdapter.
     }
 
     interface RssChannelRemoveListener {
-        void onChannelRemoved(RssChannel rssChannel, int position);
+        void onChannelRemoved(String rssChannelTitle);
     }
 }

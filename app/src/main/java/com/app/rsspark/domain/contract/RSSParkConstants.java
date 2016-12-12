@@ -11,6 +11,9 @@ public interface RSSParkConstants {
     String FIELD_DATE = "pubDate";
     String FIELD_RAW_DATE = "rawDate";
     String FIELD_FEED_ID = "rssFeedId";
+    String FIELD_WILL_BE_REMOVED = "willBeRemoved";
 
     String EXTRA_ARTICLE_URL = "article_url";
+    String EXTRA_ARTICLE_TITLE = "article_title";
+    String EXTRA_SEEN_WARNING_DIALOG = "seen_warning_dialog";
 }

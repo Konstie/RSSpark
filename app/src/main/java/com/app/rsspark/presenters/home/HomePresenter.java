@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.app.rsspark.RSSparkApplication;
+import com.app.rsspark.domain.contract.RSSParkConstants;
 import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.injection.components.DaggerDatabaseComponent;
@@ -54,7 +55,7 @@ public class HomePresenter implements Presenter<IHomeView> {
                     Log.w(TAG, "Loaded RSS-channels successfully: " + rssItems);
                     rssChannelsDetails.clear();
                     rssChannelsDetails.addAll(getRssSourcesDetails(rssItems));
-                    List<RssChannel> rssChannels = new ArrayList<>(rssItems);
+                    List<RssChannel> rssChannels = new ArrayList<>(rssItems.where().equalTo(RSSParkConstants.FIELD_WILL_BE_REMOVED, false).findAll());
                     view.onRssSourcesInitialized(rssChannels, rssChannelsDetails);
                 }, throwable -> {
                     Log.e(TAG, "Could not load feeds saved by user: " + throwable.getMessage());

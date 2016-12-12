@@ -5,6 +5,7 @@ import android.content.res.Resources;
 
 import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.injection.scopes.ForApplication;
+import com.app.rsspark.utils.PreferencesHelper;
 
 import javax.inject.Inject;
 
@@ -34,5 +35,11 @@ public class AppModule {
     @ForApplication
     Resources provideResources() {
         return application.getResources();
+    }
+
+    @Provides
+    @ForApplication
+    PreferencesHelper providePreferencesHelper() {
+        return new PreferencesHelper();
     }
 }

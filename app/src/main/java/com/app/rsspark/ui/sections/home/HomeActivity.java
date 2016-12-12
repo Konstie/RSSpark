@@ -2,8 +2,10 @@ package com.app.rsspark.ui.sections.home;
 
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,16 +24,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.rsspark.R;
+import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.domain.models.RssChannel;
+import com.app.rsspark.injection.components.AppComponent;
 import com.app.rsspark.presenters.abs.PresenterFactory;
 import com.app.rsspark.presenters.abs.PresenterLoader;
 import com.app.rsspark.presenters.home.HomePresenter;
 import com.app.rsspark.presenters.home.IHomeView;
 import com.app.rsspark.ui.sections.feed.NewsListFragment;
 import com.app.rsspark.ui.sections.feed.RSSPagerAdapter;
+import com.app.rsspark.utils.PreferencesHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +55,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     private HomePresenter presenter;
     private RssChannelsAdapter adapter;
     private RSSPagerAdapter pagerAdapter;
+    @Inject PreferencesHelper preferencesHelper;
 
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
@@ -144,15 +152,13 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     }
 
     @Override
-    public void onChannelRemoved(RssChannel rssChannel, int position) {
-//        if (adapter != null) {
-//            adapter.notifyDataSetChanged();
-//        }
-//        pagerAdapter.removeFragment(position);
-//
-//        if (pagerAdapter.getCount() > 0) {
-//            viewPager.setCurrentItem(0);
-//        }
+    public void onChannelRemoved(String rssChannelTitle) {
+        Snackbar channelRemovalSnackbar = Snackbar.make(drawer,
+                String.format(getResources().getString(R.string.feeds_unsubscribed_from_channel), rssChannelTitle),
+                Snackbar.LENGTH_LONG);
+        channelRemovalSnackbar.setActionTextColor(ContextCompat.getColor(this, R.color.color_white));
+        channelRemovalSnackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.color_warning_red));
+        channelRemovalSnackbar.show();
     }
 
     @Override

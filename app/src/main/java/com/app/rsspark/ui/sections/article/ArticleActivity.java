@@ -3,6 +3,7 @@ package com.app.rsspark.ui.sections.article;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,7 +33,19 @@ public class ArticleActivity extends AppCompatActivity {
 
         if (getIntent() != null) {
             String url = getIntent().getStringExtra(RSSParkConstants.EXTRA_ARTICLE_URL);
+            String title = getIntent().getStringExtra(RSSParkConstants.EXTRA_ARTICLE_TITLE);
+            updateToolbarWithArticleTitle(title);
             webView.loadUrl(url);
+        }
+    }
+
+    private void updateToolbarWithArticleTitle(String articleTitle) {
+        if (articleTitle == null) {
+            return;
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(articleTitle);
         }
     }
 }

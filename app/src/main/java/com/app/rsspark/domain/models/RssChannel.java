@@ -14,6 +14,7 @@ public class RssChannel extends RealmObject {
     @PrimaryKey private String title;
     private Date savedDate;
     private RealmList<NewsItem> itemList;
+    private boolean willBeRemoved;
 
     public String getTitle() {
         return title;
@@ -37,6 +38,14 @@ public class RssChannel extends RealmObject {
 
     public void setSavedDate(Date savedDate) {
         this.savedDate = savedDate;
+    }
+
+    public boolean isWillBeRemoved() {
+        return willBeRemoved;
+    }
+
+    public void setWillBeRemoved(boolean willBeRemoved) {
+        this.willBeRemoved = willBeRemoved;
     }
 
     @Override

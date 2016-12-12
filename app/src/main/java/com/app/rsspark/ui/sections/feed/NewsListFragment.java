@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.app.rsspark.R;
 import com.app.rsspark.domain.contract.RSSParkConstants;
@@ -40,9 +41,9 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     private NewsAdapter newsAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    @BindView(R.id.layout_swipe_to_refresh)
-    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.layout_swipe_to_refresh) SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.news_list_view) RecyclerView newsListView;
+    @BindView(R.id.no_news_placeholder_view) TextView noNewsTextView;
 
     public static NewsListFragment newInstance(String rssFeedId) {
         NewsListFragment fragment = new NewsListFragment();
@@ -82,12 +83,6 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
         if (newsPresenter != null) {
@@ -116,7 +111,7 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
         if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
-        Log.w(TAG, "Adapter items count: " + newsAdapter.getItemCount());
+        noNewsTextView.setVisibility(newsItems.size() > 0 ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -129,8 +124,8 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
 
     @Override
     public void onInvalidFeed() {
+        noNewsTextView.setVisibility(View.VISIBLE);
         swipeRefreshLayout.setRefreshing(false);
-
     }
 
     @Override
@@ -172,19 +167,17 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     }
 
     @Override
-    public void onArticleSelected(String articleUrl) {
-        Log.w(TAG, "onArticleSelected: " + articleUrl);
-        startArticleActivity(articleUrl);
+    public void onLinkSelected(String articleUrl, String articleTitle) {
+        Log.d(TAG, "onLinkSelected: " + articleUrl);
+        startArticleActivity(articleUrl, articleTitle);
     }
 
-    @Override
-    public void onLinkSelected(String url) {
-
-    }
-
-    private void startArticleActivity(String url) {
+    private void startArticleActivity(String url, String articleTitle) {
         Intent intent = new Intent(getContext(), ArticleActivity.class);
         intent.putExtra(RSSParkConstants.EXTRA_ARTICLE_URL, url);
+        if (articleTitle != null && !articleTitle.isEmpty()) {
+            intent.putExtra(RSSParkConstants.EXTRA_ARTICLE_TITLE, articleTitle);
+        }
         startActivity(intent);
     }
 }
