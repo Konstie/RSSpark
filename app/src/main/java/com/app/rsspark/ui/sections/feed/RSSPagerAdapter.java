@@ -12,10 +12,11 @@ import java.util.List;
  * Created by konstie on 11.12.16.
  */
 
-public class RSSPagerAdapter extends FragmentPagerAdapter {
+public class RSSPagerAdapter extends FragmentStatePagerAdapter {
     private List<NewsListFragment> fragments;
     private List<String> rssDetails;
     private FragmentManager fragmentManager;
+    private long fragmentId = 0;
 
     public RSSPagerAdapter(FragmentManager fm, List<NewsListFragment> fragments, List<String> rssDetails) {
         super(fm);
@@ -50,5 +51,14 @@ public class RSSPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return fragments.size();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        int index = fragments.indexOf(object);
+        if (index == -1)
+            return POSITION_NONE;
+        else
+            return index;
     }
 }
