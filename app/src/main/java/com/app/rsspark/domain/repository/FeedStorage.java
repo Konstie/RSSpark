@@ -32,6 +32,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
     private static final String TAG = "FeedStorage";
     private static final String HTML_TAG_IMG = "img";
     private static final String HTML_ATTR_SRC = "src";
+    private static final String HTML_TAG_P = "p";
 
     @Inject RssRetrievalService rssService;
 
@@ -101,6 +102,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
             newsItem.setImageUrl(imageUrl);
         }
         document.select(HTML_TAG_IMG).remove();
+//        document.select(HTML_TAG_P).remove();
         newsItem.setRawDate(FormattingUtils.getConvertedDate(newsItem.getPubDate()));
         newsItem.setDescription(document.body().html());
         Log.d(TAG, "Settings news description: " + newsItem.getImageUrl() + ", " + newsItem.getDescription());

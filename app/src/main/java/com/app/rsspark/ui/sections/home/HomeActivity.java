@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.rsspark.R;
@@ -55,6 +56,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     @BindView(R.id.btn_add_feed) RelativeLayout buttonAddFeed;
     @BindView(R.id.feeds_tab_layout) TabLayout tabLayout;
     @BindView(R.id.feeds_view_pager) ViewPager viewPager;
+    @BindView(R.id.no_items_placeholder_text_view) TextView noItemsHolderTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +111,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
         tabLayout.setTabGravity(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setVisibility(rssDetails.isEmpty() ? View.GONE : View.VISIBLE);
+        noItemsHolderTextView.setVisibility(rssDetails.isEmpty() ? View.VISIBLE : View.GONE);
         if (pagerAdapter == null) {
             pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), getNewsFragments(rssDetails), rssDetails);
             viewPager.setAdapter(pagerAdapter);
@@ -145,12 +148,11 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
-        pagerAdapter.removeFragment(position);
-
-        if (pagerAdapter.getCount() > 0) {
-            viewPager.setCurrentItem(0);
-        }
-
+//        pagerAdapter.removeFragment(position);
+//
+//        if (pagerAdapter.getCount() > 0) {
+//            viewPager.setCurrentItem(0);
+//        }
     }
 
     @Override

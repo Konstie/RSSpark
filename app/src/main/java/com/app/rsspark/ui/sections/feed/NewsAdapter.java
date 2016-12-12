@@ -20,13 +20,7 @@ import android.widget.TextView;
 import com.app.rsspark.R;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.utils.FormattingUtils;
-import com.app.rsspark.utils.TextViewLinkHandler;
 import com.bumptech.glide.Glide;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,7 +59,7 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         NewsItem newsItem = newsItems.get(position);
         holder.titleTextView.setText(newsItem.getTitle());
         holder.descriptionTextView.setText(newsItem.getDescription());
-        enableHtmlLinks(holder.descriptionTextView, newsItem.getDescription());
+        activateHyperlinksForTextView(holder.descriptionTextView, newsItem.getDescription());
         holder.dateTextView.setText(FormattingUtils.getFormattedDate(newsItem.getRawDate()));
         if (newsItem.getImageUrl() != null && !newsItem.getImageUrl().isEmpty()) {
             holder.newsHeaderImageView.setVisibility(View.VISIBLE);
@@ -82,7 +76,6 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         });
     }
 
-
     private void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span) {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
@@ -97,8 +90,8 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         strBuilder.removeSpan(span);
     }
 
-    private void enableHtmlLinks(TextView textView, String html) {
-        Log.w(TAG, "enableHtmlLinks called for " + html);
+    private void activateHyperlinksForTextView(TextView textView, String html) {
+        Log.w(TAG, "activateHyperlinksForTextView called for " + html);
         CharSequence sequence = Html.fromHtml(html);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);

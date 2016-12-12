@@ -32,4 +32,13 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
     </android.support.v4.view.ViewPager>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/no_items_placeholder_text_view"
+        android:text="@string/feeds_no_added"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/text_margin"/>
+
 </android.support.design.widget.CoordinatorLayout>
