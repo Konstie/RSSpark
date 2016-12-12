@@ -11,6 +11,7 @@ import com.app.rsspark.utils.FormattingUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities;
 
 import java.util.Date;
 import java.util.List;
@@ -99,8 +100,9 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
             String imageUrl = image.absUrl(HTML_ATTR_SRC);
             newsItem.setImageUrl(imageUrl);
         }
+        document.select(HTML_TAG_IMG).remove();
         newsItem.setRawDate(FormattingUtils.getConvertedDate(newsItem.getPubDate()));
-        newsItem.setDescription(document.body().text());
+        newsItem.setDescription(document.body().html());
         Log.d(TAG, "Settings news description: " + newsItem.getImageUrl() + ", " + newsItem.getDescription());
     }
 }

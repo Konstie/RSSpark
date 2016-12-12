@@ -173,6 +173,7 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
 
     @Override
     public void onArticleSelected(String articleUrl) {
+        Log.w(TAG, "onArticleSelected: " + articleUrl);
         startArticleActivity(articleUrl);
     }
 

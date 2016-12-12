@@ -35,6 +35,10 @@
             android:id="@+id/news_description_text_view"
             android:layout_marginTop="8dp"
             android:maxLines="3"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:textColorLink="@color/color_url"
             android:ellipsize="end"
             android:text="Super-dooper description"
             android:layout_below="@id/news_title_text_view"/>
