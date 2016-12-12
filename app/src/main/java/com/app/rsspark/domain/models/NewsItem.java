@@ -7,7 +7,6 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.RealmClass;
 
 /**
  * Created by kmikhailovskiy on 08.12.2016.
@@ -23,6 +22,7 @@ public class NewsItem extends RealmObject {
     private String description;
     @Element(name = "pubDate", required = false)
     private String pubDate;
+    private Date rawDate;
     private String imageUrl;
     private int rssFeedId;
 
@@ -75,6 +75,14 @@ public class NewsItem extends RealmObject {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Date getRawDate() {
+        return rawDate;
+    }
+
+    public void setRawDate(Date rawDate) {
+        this.rawDate = rawDate;
     }
 
     @Override

@@ -44,6 +44,8 @@
             android:layout_height="wrap_content"
             android:lines="1"
             android:textSize="@dimen/news_card_subtext_font_size"
-            android:id="@+id/news_date_text_view"/>
+            android:id="@+id/news_date_text_view"
+            android:layout_below="@id/news_description_text_view"
+            android:layout_marginTop="8dp"/>
     </RelativeLayout>
 </LinearLayout>

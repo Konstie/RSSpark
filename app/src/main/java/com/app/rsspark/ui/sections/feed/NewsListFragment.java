@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,6 +22,7 @@ import com.app.rsspark.ui.abs.BaseFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by konstie on 11.12.16.
@@ -50,6 +52,7 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         Bundle args = getArguments();
         if (args != null) {
             newsFeedTitle = args.getString(EXTRA_RSS_FEED_ID);
@@ -94,7 +97,7 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
         this.newsPresenter = presenter;
         Log.w(TAG, "onPresenterPrepared!");
         this.newsPresenter.onViewAttached(NewsListFragment.this);
-        this.newsPresenter.loadNewsFromCache();
+        this.newsPresenter.loadNewsFromCache(true);
     }
 
     @Override
@@ -114,9 +117,30 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     }
 
     @Override
+    public void onNewsSorted(RealmResults<NewsItem> results) {
+        if (newsAdapter != null) {
+            newsAdapter.setNewsItems(results);
+            newsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onInvalidFeed() {
         swipeRefreshLayout.setRefreshing(false);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sort:
+                if (newsPresenter != null) {
+                    newsPresenter.sortNewsFromCache();
+                }
+                return false;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

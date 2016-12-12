@@ -4,7 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Pair;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class RSSPagerAdapter extends FragmentStatePagerAdapter {
     private List<NewsListFragment> fragments;
     private List<String> rssDetails;
     private FragmentManager fragmentManager;
-    private long fragmentId = 0;
+    private int pagesCount;
 
     public RSSPagerAdapter(FragmentManager fm, List<NewsListFragment> fragments, List<String> rssDetails) {
         super(fm);
@@ -36,11 +38,10 @@ public class RSSPagerAdapter extends FragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void removeFragment(int position) {
+    public int removeFragment(int position) {
         rssDetails.remove(position);
-        fragmentManager.beginTransaction().remove(fragments.get(position)).commitNow();
         fragments.remove(position);
-        notifyDataSetChanged();
+        return position;
     }
 
     @Override
@@ -51,6 +52,11 @@ public class RSSPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return fragments.size();
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        super.destroyItem(container, position, object);
     }
 
     @Override

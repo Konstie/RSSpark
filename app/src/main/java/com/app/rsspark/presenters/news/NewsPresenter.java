@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -33,15 +34,18 @@ public class NewsPresenter implements Presenter<INewsView> {
     private static final String TAG = "NewsPresenter";
 
     private String newsFeedTitle;
+    private Sort sortOrder;
     private RssChannel rssChannel;
     private INewsView view;
     private FeedStorage feedStorage;
     private NewsStorage newsStorage;
+    private RealmResults<NewsItem> currentNewsList;
     @Inject ApiInterceptor apiInterceptor;
     @Inject RssRetrievalService rssService;
 
     public NewsPresenter(String title) {
         this.newsFeedTitle = title;
+        this.sortOrder = Sort.DESCENDING; // news sort order by default
         DatabaseComponent databaseComponent = DaggerDatabaseComponent.builder().build();
         AppComponent appComponent = RSSparkApplication.getDaggerAppComponent();
         appComponent.inject(this);
@@ -49,17 +53,31 @@ public class NewsPresenter implements Presenter<INewsView> {
         newsStorage = databaseComponent.newsStorage();
     }
 
-    public void loadNewsFromCache() {
+    public void loadNewsFromCache(boolean allowLoadingFromNetwork) {
         Log.w(TAG, "loadNewsFromCache, feed id: " + newsFeedTitle);
         if (rssChannel == null) {
             rssChannel = feedStorage.findRssSourceByTitle(newsFeedTitle);
         }
         Log.d(TAG, "Loaded rss Channel: " + rssChannel);
-        RealmResults<NewsItem> newsItems = rssChannel.getItemList().sort(RSSParkDatabaseContract.FIELD_DATE);
-        view.onNewsLoaded(newsItems);
-        if (newsItems.isEmpty()) {
+        RealmList<NewsItem> newsItems = rssChannel.getItemList();
+        if (newsItems == null) {
+            return;
+        }
+        currentNewsList = newsItems.sort(RSSParkDatabaseContract.FIELD_RAW_DATE, Sort.DESCENDING);
+        view.onNewsLoaded(currentNewsList);
+        if (newsItems.isEmpty() && allowLoadingFromNetwork) {
             loadNewsFeedFromNetwork();
         }
+    }
+
+    public void sortNewsFromCache() {
+        Log.w(TAG, "sortNewsFromCache() pressed");
+        if (rssChannel == null || rssChannel.getItemList() == null || rssChannel.getItemList().isEmpty()) {
+            return;
+        }
+        sortOrder = sortOrder == Sort.DESCENDING ? Sort.ASCENDING : Sort.DESCENDING;
+        currentNewsList = rssChannel.getItemList().sort(RSSParkDatabaseContract.FIELD_RAW_DATE, sortOrder);
+        view.onNewsSorted(currentNewsList);
     }
 
     public void loadNewsFeedFromNetwork() {

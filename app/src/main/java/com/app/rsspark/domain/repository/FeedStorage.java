@@ -6,6 +6,7 @@ import com.app.rsspark.domain.contract.RSSParkDatabaseContract;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.network.services.RssRetrievalService;
+import com.app.rsspark.utils.FormattingUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -67,7 +68,7 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
             Log.d(TAG, "realm trans. started");
             for (NewsItem newsItem : newsItems) {
                 if (!newsItemAlreadyExistInList(newsItem.getTitle())) {
-                    setNewsDescription(newsItem);
+                    setAdditionalNewsData(newsItem);
                     realm.copyToRealmOrUpdate(newsItem);
                     rssChannel.getItemList().add(newsItem);
                 }
@@ -91,13 +92,14 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
         return news;
     }
 
-    private void setNewsDescription(NewsItem newsItem) {
+    private void setAdditionalNewsData(NewsItem newsItem) {
         Document document = Jsoup.parse(newsItem.getDescription());
         Element image = document.select(HTML_TAG_IMG).first();
         if (image != null) {
             String imageUrl = image.absUrl(HTML_ATTR_SRC);
             newsItem.setImageUrl(imageUrl);
         }
+        newsItem.setRawDate(FormattingUtils.getConvertedDate(newsItem.getPubDate()));
         newsItem.setDescription(document.body().text());
         Log.d(TAG, "Settings news description: " + newsItem.getImageUrl() + ", " + newsItem.getDescription());
     }

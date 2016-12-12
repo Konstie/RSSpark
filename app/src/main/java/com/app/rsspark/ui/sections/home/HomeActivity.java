@@ -97,17 +97,6 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onRssSourcesInitialized(RealmResults<RssChannel> rssChannels, List<String> rssDetails) {
         Log.d(TAG, "onRssSourcesInitialized: " + rssChannels.size());
         adapter = new FeedItemsAdapter(HomeActivity.this, rssChannels, true, this);
@@ -165,6 +154,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
         if (pagerAdapter.getCount() > 0) {
             viewPager.setCurrentItem(0);
         }
+
     }
 
     @Override

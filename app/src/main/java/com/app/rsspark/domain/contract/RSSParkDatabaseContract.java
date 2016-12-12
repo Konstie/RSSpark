@@ -9,5 +9,6 @@ public interface RSSParkDatabaseContract {
     String FIELD_ID = "id";
     String FIELD_TITLE = "title";
     String FIELD_DATE = "pubDate";
+    String FIELD_RAW_DATE = "rawDate";
     String FIELD_FEED_ID = "rssFeedId";
 }

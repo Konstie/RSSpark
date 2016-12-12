@@ -14,12 +14,16 @@ import android.widget.TextView;
 import com.app.rsspark.R;
 import com.app.rsspark.domain.models.NewsItem;
 import com.app.rsspark.utils.FormattingUtils;
+import com.app.rsspark.utils.NewsByDateComparator;
 import com.bumptech.glide.Glide;
+
+import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by konstie on 10.12.16.
@@ -51,7 +55,7 @@ public class NewsAdapter extends RealmRecyclerViewAdapter<NewsItem, NewsAdapter.
         NewsItem newsItem = newsItems.get(position);
         holder.titleTextView.setText(newsItem.getTitle());
         holder.descriptionTextView.setText(newsItem.getDescription());
-//        holder.dateTextView.setText(FormattingUtils.getFormattedDate(newsItem.getDate()));
+        holder.dateTextView.setText(FormattingUtils.getFormattedDate(newsItem.getRawDate()));
         if (newsItem.getImageUrl() != null && !newsItem.getImageUrl().isEmpty()) {
             holder.newsHeaderImageView.setVisibility(View.VISIBLE);
             Glide.with(context)
