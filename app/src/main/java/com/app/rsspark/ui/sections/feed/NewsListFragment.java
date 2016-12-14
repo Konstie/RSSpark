@@ -26,7 +26,6 @@ import com.app.rsspark.ui.sections.article.ArticleActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * Created by konstie on 11.12.16.
@@ -123,8 +122,10 @@ public class NewsListFragment extends BaseFragment<NewsPresenter, INewsView> imp
     }
 
     @Override
-    public void onInvalidFeed() {
-        noNewsTextView.setVisibility(View.VISIBLE);
+    public void onInvalidFeed(boolean connectionEnabled) {
+        if (connectionEnabled) {
+            noNewsTextView.setVisibility(View.VISIBLE);
+        }
         swipeRefreshLayout.setRefreshing(false);
     }
 

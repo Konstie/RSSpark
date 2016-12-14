@@ -1,5 +1,6 @@
 package com.app.rsspark.presenters.news;
 
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import com.app.rsspark.RSSparkApplication;
@@ -12,7 +13,6 @@ import com.app.rsspark.domain.repository.FeedStorage;
 import com.app.rsspark.domain.repository.NewsStorage;
 import com.app.rsspark.injection.components.AppComponent;
 import com.app.rsspark.injection.components.DatabaseComponent;
-import com.app.rsspark.network.ApiInterceptor;
 import com.app.rsspark.network.services.RssRetrievalService;
 import com.app.rsspark.presenters.abs.Presenter;
 
@@ -39,8 +39,8 @@ public class NewsPresenter implements Presenter<INewsView> {
     private FeedStorage feedStorage;
     private NewsStorage newsStorage;
     private RealmResults<NewsItem> currentNewsList;
-    @Inject ApiInterceptor apiInterceptor;
     @Inject RssRetrievalService rssService;
+    @Inject ConnectivityManager connectivityManager;
 
     public NewsPresenter(String title) {
         this.newsFeedTitle = title;
@@ -91,8 +91,12 @@ public class NewsPresenter implements Presenter<INewsView> {
                     onNewsSavedToCache(newsItems);
                 }, throwable -> {
                     Log.e(TAG, "Failed: " + throwable.getMessage());
-                    view.onInvalidFeed();
+                    view.onInvalidFeed(isNetworkConnectionActive());
                 });
+    }
+
+    private boolean isNetworkConnectionActive() {
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 
     private void onNewsSavedToCache(RealmList<NewsItem> newsItems) {

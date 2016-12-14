@@ -11,5 +11,5 @@ import io.realm.RealmResults;
 public interface INewsView {
     void onNewsLoaded(RealmResults<NewsItem> newsItems);
     void onNewsSorted(RealmResults<NewsItem> newsItems);
-    void onInvalidFeed();
+    void onInvalidFeed(boolean networkConnectionEnabled);
 }

@@ -2,6 +2,7 @@ package com.app.rsspark.injection.modules;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
 
 import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.injection.scopes.ForApplication;
@@ -29,6 +30,12 @@ public class AppModule {
     @ForApplication
     Context provideAppContext() {
         return application;
+    }
+
+    @Provides
+    @ForApplication
+    ConnectivityManager provideConnectivityManager(Context appContext) {
+        return (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Provides
