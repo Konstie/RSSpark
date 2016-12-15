@@ -178,7 +178,6 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     @Override
     public void onClick(View view) {
         if (view == buttonAddFeed && adapter != null) {
-//            onAddFeedClicked();
             showNewFeedDialog();
         }
     }

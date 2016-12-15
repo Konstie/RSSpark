@@ -2,15 +2,13 @@ package com.app.rsspark.ui.sections.home;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.PatternsCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -84,6 +82,12 @@ public class RssChannelCreationDialog extends DialogFragment {
         } else  {
             listener.showInvalidNewRssMessage(R.string.feed_dialog_empty_title);
         }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        listener = null;
+        super.onDismiss(dialog);
     }
 
     private boolean isUrlMatching(String urlToCheck) {
