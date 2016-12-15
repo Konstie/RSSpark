@@ -11,11 +11,8 @@ import com.app.rsspark.utils.FormattingUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Entities;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,14 +32,11 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
     private static final String TAG = "FeedStorage";
     private static final String HTML_TAG_IMG = "img";
     private static final String HTML_ATTR_SRC = "src";
-    private static final String HTML_TAG_P = "p";
 
     @Inject RssRetrievalService rssService;
-    private List<RssChannel> rssChannelsToRemove;
 
     public FeedStorage(Realm realm) {
         super(realm);
-        this.rssChannelsToRemove = new ArrayList<>();
     }
 
     @Override
@@ -98,32 +92,6 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
         realm.executeTransaction(realm1 -> rssChannel.deleteFromRealm());
     }
 
-    public void addRssChannelToRemove(RssChannel rssChannelToRemove) {
-        Log.i(TAG, "Added RSS Channel to remove: " + rssChannelToRemove);
-        rssChannelsToRemove.add(rssChannelToRemove);
-        realm.executeTransaction(realm1 -> rssChannelToRemove.setWillBeRemoved(true));
-    }
-
-    public void removeCheckedRssChannels() {
-        Log.i(TAG, "Going to remove redundant channels: " + rssChannelsToRemove.size());
-        realm.beginTransaction();
-        Observable.from(rssChannelsToRemove)
-                .subscribe(rssChannel -> rssChannel.deleteFromRealm(),
-                        throwable -> Log.e(TAG, "Could not remove rss channel: " + throwable.getMessage()),
-                        () -> {
-                            rssChannelsToRemove.clear();
-                            realm.commitTransaction();
-                        });
-    }
-
-    private RealmList<NewsItem> getRealmListOf(List<NewsItem> newsItems) {
-        RealmList<NewsItem> news = new RealmList<>();
-        for (NewsItem newsItem : newsItems) {
-            news.add(newsItem);
-        }
-        return news;
-    }
-
     private void setAdditionalNewsData(NewsItem newsItem) {
         Document document = Jsoup.parse(newsItem.getDescription());
         Element image = document.select(HTML_TAG_IMG).first();
@@ -132,7 +100,6 @@ public class FeedStorage extends BaseStorage<RssChannel> implements FeedsReposit
             newsItem.setImageUrl(imageUrl);
         }
         document.select(HTML_TAG_IMG).remove();
-//        document.select(HTML_TAG_P).remove();
         newsItem.setRawDate(FormattingUtils.getConvertedDate(newsItem.getPubDate()));
         newsItem.setDescription(document.body().html());
         Log.d(TAG, "Settings news description: " + newsItem.getImageUrl() + ", " + newsItem.getDescription());

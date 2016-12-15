@@ -10,6 +10,7 @@ import com.app.rsspark.injection.components.DaggerDatabaseComponent;
 import com.app.rsspark.injection.components.DatabaseComponent;
 import com.app.rsspark.injection.modules.AppModule;
 import com.app.rsspark.injection.modules.DatabaseModule;
+import com.squareup.leakcanary.LeakCanary;
 
 import io.realm.Realm;
 
@@ -24,6 +25,11 @@ public class RSSparkApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
 
         Realm.init(this);
         appComponent = DaggerAppComponent.builder()

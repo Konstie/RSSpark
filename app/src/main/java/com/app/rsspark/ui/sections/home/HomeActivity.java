@@ -24,18 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.rsspark.R;
-import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.domain.models.RssChannel;
-import com.app.rsspark.injection.components.AppComponent;
 import com.app.rsspark.presenters.abs.PresenterFactory;
 import com.app.rsspark.presenters.abs.PresenterLoader;
 import com.app.rsspark.presenters.home.HomePresenter;
 import com.app.rsspark.presenters.home.IHomeView;
-import com.app.rsspark.ui.sections.feed.NewsListFragment;
 import com.app.rsspark.ui.sections.feed.RSSPagerAdapter;
 import com.app.rsspark.utils.PreferencesHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -121,18 +117,10 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
         tabLayout.setVisibility(rssDetails.isEmpty() ? View.GONE : View.VISIBLE);
         noItemsHolderTextView.setVisibility(rssDetails.isEmpty() ? View.VISIBLE : View.GONE);
         if (pagerAdapter == null) {
-            pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), getNewsFragments(rssDetails), rssDetails);
+            pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), rssDetails);
             viewPager.setAdapter(pagerAdapter);
         }
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
-    }
-
-    private List<NewsListFragment> getNewsFragments(List<String> rssChannelIds) {
-        List<NewsListFragment> fragments = new ArrayList<>();
-        for (String rssFeedDetails : rssChannelIds) {
-            fragments.add(NewsListFragment.newInstance(rssFeedDetails));
-        }
-        return fragments;
     }
 
     @Override
@@ -146,13 +134,16 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
             adapter.notifyDataSetChanged();
         }
         if (pagerAdapter != null) {
-            pagerAdapter.addNewFragment(rssChannel.getTitle());
+            pagerAdapter.notifyDataSetChanged();
         }
         drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override
-    public void onChannelRemoved(String rssChannelTitle) {
+    public void onChannelRemoved(String rssChannelTitle, int rssChannelPosition) {
+        presenter.onRssChannelRemoved(rssChannelTitle, rssChannelPosition);
+        pagerAdapter.notifyDataSetChanged();
+
         Snackbar channelRemovalSnackbar = Snackbar.make(drawer,
                 String.format(getResources().getString(R.string.feeds_unsubscribed_from_channel), rssChannelTitle),
                 Snackbar.LENGTH_LONG);
@@ -178,9 +169,6 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     @Override
     public void onLoaderReset(Loader<HomePresenter> loader) {
         Log.i(TAG, "LoaderCallbacks -> onLoaderReset: isChangingConfigurations {" + isChangingConfigurations() + "}");
-        if (!isChangingConfigurations()) {
-            this.presenter.removeAllRedundantRssChannels();
-        }
         this.presenter.onViewDetached();
         this.presenter.onDestroyed();
         this.presenter = null;
@@ -201,13 +189,5 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
     @Override
     public void showInvalidNewRssMessage(@StringRes int messageRes) {
         Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (!isChangingConfigurations()) {
-            presenter.removeAllRedundantRssChannels();
-        }
-        super.onDestroy();
     }
 }

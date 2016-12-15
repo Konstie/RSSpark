@@ -2,69 +2,47 @@ package com.app.rsspark.ui.sections.feed;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.view.ViewGroup;
 
 import java.util.List;
+
+import eu.inloop.pager.UpdatableFragmentPagerAdapter;
 
 /**
  * Created by konstie on 11.12.16.
  */
 
-public class RSSPagerAdapter extends FragmentStatePagerAdapter {
-    private List<NewsListFragment> fragments;
-    private List<String> rssDetails;
-    private FragmentManager fragmentManager;
+public class RSSPagerAdapter extends UpdatableFragmentPagerAdapter {
+    private List<String> rssTitles;
 
-    public RSSPagerAdapter(FragmentManager fm, List<NewsListFragment> fragments, List<String> rssDetails) {
+    public RSSPagerAdapter(FragmentManager fm, List<String> rssTitles) {
         super(fm);
-        this.fragmentManager = fm;
-        this.fragments = fragments;
-        this.rssDetails = rssDetails;
+        this.rssTitles = rssTitles;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return fragments.get(position);
-    }
-
-    public void addNewFragment(String feedDetails) {
-        NewsListFragment newsListFragment = NewsListFragment.newInstance(feedDetails);
-        fragments.add(newsListFragment);
-        rssDetails.add(feedDetails);
-        notifyDataSetChanged();
-    }
-
-    public void removeFragment(int position) {
-        rssDetails.remove(position);
-        fragments.remove(position);
-        notifyDataSetChanged();
+        return NewsListFragment.newInstance(rssTitles.get(position));
     }
 
     @Override
     public int getItemPosition(Object object) {
-        if (fragments.contains(object)) return fragments.indexOf(object);
+        if (rssTitles.contains(object)) return rssTitles.indexOf(object);
         return POSITION_NONE;
     }
 
     @Override
+    public long getItemId(int position) {
+        return rssTitles.get(position).hashCode();
+    }
+
+    @Override
     public CharSequence getPageTitle(int position) {
-        return rssDetails.get(position);
+        return rssTitles.get(position);
     }
 
     @Override
     public int getCount() {
-        return fragments.size();
+        return rssTitles.size();
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        if (position >= getCount() && object != null) {
-            FragmentManager fragmentManager = ((Fragment) object).getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove((Fragment) object);
-            fragmentTransaction.commitNow();
-        }
-    }
 }

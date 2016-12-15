@@ -1,13 +1,11 @@
 package com.app.rsspark.presenters.home;
 
 import android.util.Log;
-import android.util.Pair;
 
 import com.app.rsspark.RSSparkApplication;
 import com.app.rsspark.domain.contract.RSSParkConstants;
 import com.app.rsspark.domain.models.RssChannel;
 import com.app.rsspark.domain.repository.FeedStorage;
-import com.app.rsspark.injection.components.DaggerDatabaseComponent;
 import com.app.rsspark.injection.components.DatabaseComponent;
 import com.app.rsspark.presenters.abs.Presenter;
 
@@ -18,7 +16,6 @@ import javax.inject.Inject;
 
 import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by konstie on 10.12.16.
@@ -28,13 +25,13 @@ public class HomePresenter implements Presenter<IHomeView> {
     private static final String TAG = "HomePresenter";
 
     private IHomeView view;
-    private List<String> rssChannelsDetails;
+    private List<String> rssChannelsTitles;
     @Inject FeedStorage feedStorage;
 
     public HomePresenter() {
         DatabaseComponent databaseComponent = RSSparkApplication.getDatabaseComponent();
         databaseComponent.inject(this);
-        this.rssChannelsDetails = new ArrayList<>();
+        this.rssChannelsTitles = new ArrayList<>();
     }
 
     @Override
@@ -53,10 +50,10 @@ public class HomePresenter implements Presenter<IHomeView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rssItems -> {
                     Log.w(TAG, "Loaded RSS-channels successfully: " + rssItems);
-                    rssChannelsDetails.clear();
-                    rssChannelsDetails.addAll(getRssSourcesDetails(rssItems));
+                    rssChannelsTitles.clear();
+                    rssChannelsTitles.addAll(getRssChannelsTitles(rssItems));
                     List<RssChannel> rssChannels = new ArrayList<>(rssItems.where().equalTo(RSSParkConstants.FIELD_WILL_BE_REMOVED, false).findAll());
-                    view.onRssSourcesInitialized(rssChannels, rssChannelsDetails);
+                    view.onRssSourcesInitialized(rssChannels, rssChannelsTitles);
                 }, throwable -> {
                     Log.e(TAG, "Could not load feeds saved by user: " + throwable.getMessage());
                 });
@@ -67,14 +64,14 @@ public class HomePresenter implements Presenter<IHomeView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rssItem -> {
                     Log.i(TAG, "RSS item " + rssItem + " was saved successfully!");
-                    rssChannelsDetails.add(rssItem.getTitle());
+                    rssChannelsTitles.add(rssItem.getTitle());
                     view.onNewRssSourceAdded(rssItem);
                 }, throwable -> {
                     Log.e(TAG, "Could not save RSS-feed: " + throwable.getMessage());
                 });
     }
 
-    private List<String> getRssSourcesDetails(RealmResults<RssChannel> rssChannels) {
+    private List<String> getRssChannelsTitles(RealmResults<RssChannel> rssChannels) {
         List<String> rssTitles = new ArrayList<>();
         for (RssChannel rssChannel : rssChannels) {
             rssTitles.add(rssChannel.getTitle());
@@ -82,8 +79,9 @@ public class HomePresenter implements Presenter<IHomeView> {
         return rssTitles;
     }
 
-    public void removeAllRedundantRssChannels() {
-        feedStorage.removeCheckedRssChannels();
+    public void onRssChannelRemoved(String rssChannelTitle, int rssChannelPosition) {
+        rssChannelsTitles.remove(rssChannelPosition);
+        feedStorage.removeRssChannelByPrimaryKey(rssChannelTitle);
     }
 
     @Override

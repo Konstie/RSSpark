@@ -75,27 +75,10 @@ public class RssChannelsAdapter extends RecyclerView.Adapter<RssChannelsAdapter.
 
     private void onRemoveClicked(RssChannel rssChannel, int position) {
         rssSources.remove(position);
-        feedStorage.addRssChannelToRemove(rssChannel);
         notifyDataSetChanged();
-        if (listener != null && preferencesHelper.hasSeenFeedRemovalWarningDialog(context)) {
-            listener.onChannelRemoved(rssChannel.getTitle());
-        } else if (!preferencesHelper.hasSeenFeedRemovalWarningDialog(context)){
-            showWarningDialog(rssChannel.getTitle());
-            preferencesHelper.setSeenFeedRemovalWarningDialog(context, true);
+        if (listener != null) {
+            listener.onChannelRemoved(rssChannel.getTitle(), position);
         }
-    }
-
-    private void showWarningDialog(String rssTitle) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        dialogBuilder.setMessage(R.string.feeds_unsubscribe)
-                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {
-                    if (listener != null) {
-                        listener.onChannelRemoved(rssTitle);
-                    }
-                })
-                .setNegativeButton(R.string.action_cancel, (dialogInterface, i) -> {})
-                .create();
-        dialogBuilder.show();
     }
 
     static class FeedItemHolder extends RecyclerView.ViewHolder {
@@ -109,6 +92,6 @@ public class RssChannelsAdapter extends RecyclerView.Adapter<RssChannelsAdapter.
     }
 
     interface RssChannelRemoveListener {
-        void onChannelRemoved(String rssChannelTitle);
+        void onChannelRemoved(String rssChannelTitle, int channelPosition);
     }
 }
