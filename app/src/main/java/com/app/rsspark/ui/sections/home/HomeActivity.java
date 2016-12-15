@@ -8,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,11 +39,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.RealmResults;
 
 public class HomeActivity extends AppCompatActivity implements IHomeView, View.OnClickListener,
         RssChannelCreationDialog.RssDialogListener, LoaderManager.LoaderCallbacks<HomePresenter>,
         RssChannelsAdapter.RssChannelRemoveListener {
+    private static final int ACTIVE_RSS_CHANNELS_LIMIT = 7;
     private static final int LOADER_ID = 101;
     private static final String RSS_DIALOG_TAG = "ADD_RSS";
     private static final String TAG = "HomeActivity";
@@ -120,7 +121,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
             pagerAdapter = new RSSPagerAdapter(getSupportFragmentManager(), rssDetails);
             viewPager.setAdapter(pagerAdapter);
         }
-        viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+        viewPager.setOffscreenPageLimit(3);
     }
 
     @Override
@@ -176,9 +177,26 @@ public class HomeActivity extends AppCompatActivity implements IHomeView, View.O
 
     @Override
     public void onClick(View view) {
-        if (view == buttonAddFeed) {
+        if (view == buttonAddFeed && adapter != null) {
+//            onAddFeedClicked();
             showNewFeedDialog();
         }
+    }
+
+    private void onAddFeedClicked() {
+        if (adapter.getItemCount() >= ACTIVE_RSS_CHANNELS_LIMIT) {
+            showRssChannelsLimitWarningDialog();
+        } else {
+            showNewFeedDialog();
+        }
+    }
+
+    private void showRssChannelsLimitWarningDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage(R.string.feeds_channels_limit)
+                .setPositiveButton(R.string.action_ok, (dialogInterface, i) -> {})
+                .create();
+        dialogBuilder.show();
     }
 
     private void showNewFeedDialog() {
