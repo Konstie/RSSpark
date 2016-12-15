@@ -37,8 +37,6 @@ public class NetworkModule {
     @ForApplication
     OkHttpClient provideOkHttpClient(ApiInterceptor interceptor) {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
-                .readTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(interceptor)
                 .build();
         return okHttpClient;
